@@ -76,16 +76,16 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- Direct Video / Telegram Host Frame -->
+        <!-- 🚀 TELEGRAM NATIVE VIDEO STREAM FRAME -->
         <iframe 
-          id="videoFrame" 
+          id="tgVideoFrame" 
           src="" 
           class="hidden w-full h-full border-0 bg-black" 
           allow="autoplay; fullscreen"
           allowfullscreen>
         </iframe>
 
-        <!-- 📌 NEW BADGE DESIGN: POST NO (Small) + NUMBER (Large & Bold) -->
+        <!-- 📌 BIG PROMINENT POST NUMBER BADGE -->
         <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
           <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 tracking-tight leading-none">---</span>
@@ -98,7 +98,7 @@
           class="absolute bottom-20 left-4 z-20 bg-slate-900/90 hover:bg-pink-600 backdrop-blur-md border border-slate-700 hover:border-pink-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg transition duration-200"
         >
           <i id="playBtnIcon" class="fa-solid fa-play text-pink-400 text-xs"></i>
-          <span id="playBtnText">Watch Video</span>
+          <span id="playBtnText">Watch Reel Preview</span>
         </button>
 
         <!-- Masked Handle Banner -->
@@ -161,7 +161,6 @@
         <!-- Injected stream -->
       </div>
 
-      <!-- ⏳ Infinite Scroll Sentinel -->
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
       </div>
@@ -181,6 +180,7 @@
     let isPlaying = false;
     let observer = null;
 
+    // Strict Filter: Sirf COMPLETED ya DONE rows load hongi
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -190,13 +190,15 @@
         const shortcode = row[0];
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
+        const tgMsgId = row[3] || ""; // Column D: Future direct message_id
 
         if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE")) {
           result.push({
             shortcode: shortcode,
             username: username && username.length > 0 ? username : "creator",
             status: status,
-            postIndex: i
+            postIndex: i,
+            tgMsgId: tgMsgId
           });
         }
       }
@@ -221,6 +223,18 @@
         img.dataset.failedOnce = "true";
         img.src = `https://instagram.com/p/${currentModel.shortcode}/media/?size=l`;
       }
+    }
+
+    // Dynamic Telegram Stream Resolver
+    function getTelegramEmbedUrl(model) {
+      // Agar Sheet ke Column D me direct id hai toh wahi use karo
+      if (model.tgMsgId && model.tgMsgId.length > 0) {
+        return `https://t.me/prettyladies4/${model.tgMsgId}?embed=1`;
+      }
+      // Method 1: Ratio calculate karke auto-link (Post index formula)
+      // Reference: Post index around ~500 maps to msg #527
+      const calculatedId = Math.max(1, model.postIndex + 25);
+      return `https://t.me/prettyladies4/${calculatedId}?embed=1`;
     }
 
     async function initVault() {
@@ -262,18 +276,17 @@
       const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
-      const vFrame = document.getElementById('videoFrame');
+      const tgFrame = document.getElementById('tgVideoFrame');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       isPlaying = false;
-      vFrame.src = "";
-      vFrame.classList.add('hidden');
+      tgFrame.src = "";
+      tgFrame.classList.add('hidden');
       thumb.classList.remove('hidden');
-      playBtnText.innerText = "Watch Video";
+      playBtnText.innerText = "Watch Reel Preview";
       playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
 
-      // Bold Post Number
       label.innerText = currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
       
@@ -289,24 +302,24 @@
     }
 
     function togglePlayReel() {
-      const vFrame = document.getElementById('videoFrame');
+      const tgFrame = document.getElementById('tgVideoFrame');
       const thumb = document.getElementById('modelThumbnail');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       if (!isPlaying) {
-        // Embed load sequence
-        vFrame.src = `https://www.instagram.com/reel/${currentModel.shortcode}/embed/captioned/`;
-        vFrame.classList.remove('hidden');
+        // Stream video smoothly from Telegram embed without copyright wall
+        tgFrame.src = getTelegramEmbedUrl(currentModel);
+        tgFrame.classList.remove('hidden');
         thumb.classList.add('hidden');
         playBtnText.innerText = "Show Photo";
         playBtnIcon.className = "fa-solid fa-image text-pink-400 text-xs";
         isPlaying = true;
       } else {
-        vFrame.src = "";
-        vFrame.classList.add('hidden');
+        tgFrame.src = "";
+        tgFrame.classList.add('hidden');
         thumb.classList.remove('hidden');
-        playBtnText.innerText = "Watch Video";
+        playBtnText.innerText = "Watch Reel Preview";
         playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
         isPlaying = false;
       }
@@ -360,7 +373,6 @@
               loading="lazy"
               onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Model+Media'"
             >
-            <!-- 📌 BADGE: POST NO (Small) + NUMBER (Large) -->
             <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-pink-500/30 flex items-baseline gap-1 shadow-md">
               <span class="text-[9px] font-bold text-slate-400 uppercase">POST NO.</span>
               <span class="text-xs font-black text-pink-400">${item.postIndex}</span>

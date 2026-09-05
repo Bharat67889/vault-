@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pretty Ladies Vault | Discover Creator Profiles</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.8); }
+    }
+    .pulse-btn { animation: pulseGlow 2s infinite; }
+    .glass-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white">
+
+  <!-- 🧭 TOP HEADER -->
+  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🔥</span>
+      <span class="font-extrabold tracking-wide text-lg bg-gradient-to-r from-pink-500 via-rose-400 to-purple-500 bg-clip-text text-transparent">
+        PRETTY LADIES VAULT
+      </span>
+    </div>
+    <div class="text-xs bg-slate-800 text-pink-400 font-semibold px-2.5 py-1 rounded-full border border-pink-500/30">
+      VIP ACCESS
+    </div>
+  </header>
+
+  <!-- 🔍 SEARCH BAR SECTION -->
+  <section class="max-w-md mx-auto w-full px-4 pt-4">
+    <form id="searchForm" class="relative flex items-center">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Enter Post # or Shortcode (e.g. 426)..." 
+        class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-10 pr-20 text-white placeholder-slate-500 focus:outline-none transition-all"
+      >
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-xs"></i>
+      <button 
+        type="submit" 
+        class="absolute right-1.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition"
+      >
+        Search
+      </button>
+    </form>
+  </section>
+
+  <!-- 📢 TOP AD BANNER CONTAINER -->
+  <div class="max-w-md mx-auto w-full px-4 pt-3">
+    <div id="ad-top" class="w-full min-h-[50px] bg-slate-900/60 rounded-xl border border-dashed border-slate-800 flex items-center justify-center text-xs text-slate-500">
+      <!-- ADSTERRA / MONETAG TOP BANNER CODE HERE -->
+      <span>[ Sponsored Link / Advertisement ]</span>
+    </div>
+  </div>
+
+  <!-- 🎯 MAIN HERO: TARGET REEL UNLOCK SECTION -->
+  <main class="max-w-md mx-auto w-full px-4 py-4 flex-grow">
+    <div id="loader" class="text-center py-16">
+      <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
+      <p class="text-xs text-slate-400">Loading creator from vault...</p>
+    </div>
+
+    <div id="contentCard" class="hidden bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Poster / Media Preview -->
+      <div class="relative aspect-[9/12] bg-slate-950 overflow-hidden flex items-center justify-center">
+        <img 
+          id="modelThumbnail" 
+          src="" 
+          alt="Model Preview" 
+          class="w-full h-full object-cover filter blur-sm scale-105 transition duration-500"
+        >
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/30"></div>
+        
+        <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-xs font-medium text-pink-300 flex items-center gap-1.5">
+          <i class="fa-brands fa-instagram text-pink-400"></i>
+          <span id="postLabel">Post #---</span>
+        </div>
+
+        <div class="absolute bottom-4 inset-x-4 text-center">
+          <div class="inline-block bg-slate-900/90 backdrop-blur-md border border-slate-700/60 px-4 py-1.5 rounded-xl shadow-lg mb-2">
+            <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold block">Instagram Handle</span>
+            <span id="blurredHandle" class="text-base font-bold text-pink-400 tracking-wider">@locked_user</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Timer Section -->
+      <div class="p-4 space-y-3 bg-slate-900">
+        <button 
+          id="unlockBtn" 
+          class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition active:scale-98"
+        >
+          <i class="fa-solid fa-lock text-sm"></i>
+          <span>TAP TO REVEAL PROFILE ID</span>
+        </button>
+
+        <!-- Progress Bar Box (Hidden by default) -->
+        <div id="timerContainer" class="hidden space-y-2 pt-1">
+          <div class="flex justify-between text-xs text-slate-400 font-medium">
+            <span>Verifying & Unlocking Handle...</span>
+            <span id="countdownText" class="text-pink-400 font-bold">5s</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full w-0 transition-all duration-1000"></div>
+          </div>
+          
+          <!-- Mid-Wait Interstitial Ad Slot -->
+          <div id="ad-mid-wait" class="min-h-[60px] bg-slate-950/60 rounded-lg border border-dashed border-slate-800 flex items-center justify-center text-[10px] text-slate-500 mt-2">
+            <!-- NATIVE BANNER AD DURING WAIT -->
+            <span>[ Advertisement ]</span>
+          </div>
+        </div>
+
+        <!-- Direct Instagram Redirect Button (Revealed after timer) -->
+        <a 
+          id="finalProfileLink" 
+          href="#" 
+          target="_blank" 
+          class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 text-center transition shadow-lg shadow-emerald-950"
+        >
+          <i class="fa-brands fa-instagram text-lg"></i>
+          <span id="unlockedBtnText">OPEN INSTAGRAM PROFILE</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 🔥 EXPLORE MORE MODELS GRID -->
+    <div class="mt-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-slate-200 tracking-wide uppercase flex items-center gap-1.5">
+          <span class="text-pink-500">✨</span> Trending In Vault
+        </h2>
+        <span class="text-[11px] text-slate-500">Auto Updated</span>
+      </div>
+
+      <div id="exploreGrid" class="grid grid-cols-2 gap-3">
+        <!-- Dynamic Cards Inserted Here via JS -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="mt-auto py-4 border-t border-slate-900 text-center text-xs text-slate-600">
+    Pretty Ladies Vault &bull; Auto Curated Daily
+  </footer>
+
+  <!-- ⚙️ ENGINE JAVASCRIPT LOGIC -->
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+
+    let db = [];
+    let currentModel = null;
+
+    // Fast CSV Parser
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      const result = [];
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(",").map(item => item.replace(/^["']|["']$/g, '').trim());
+        if (row[0] && row[0].length > 3) {
+          result.push({
+            shortcode: row[0],
+            username: row[1] || "trending_model",
+            status: row[2] || "DONE",
+            postIndex: i // Approximate chronological post number
+          });
+        }
+      }
+      return result;
+    }
+
+    async function initVault() {
+      try {
+        const res = await fetch(CSV_URL);
+        const text = await res.text();
+        db = parseCSV(text);
+
+        if (db.length === 0) {
+          throw new Error("No data in sheet");
+        }
+
+        // Detect ID from URL (?id=450 or ?id=shortcode)
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedId = urlParams.get('id');
+
+        loadActiveModel(requestedId);
+        renderExploreGrid();
+      } catch (err) {
+        document.getElementById('loader').innerHTML = `<p class="text-rose-500 text-xs">Failed to sync vault records.</p>`;
+      }
+    }
+
+    function loadActiveModel(query) {
+      if (!query) {
+        currentModel = db[db.length - 1]; // Default to latest reel
+      } else {
+        const numericId = parseInt(query);
+        if (!isNaN(numericId) && numericId > 0 && numericId <= db.length) {
+          currentModel = db[numericId - 1];
+        } else {
+          currentModel = db.find(m => m.shortcode.toLowerCase() === query.toLowerCase()) || db[db.length - 1];
+        }
+      }
+
+      renderHero();
+    }
+
+    function renderHero() {
+      const loader = document.getElementById('loader');
+      const card = document.getElementById('contentCard');
+      const thumb = document.getElementById('modelThumbnail');
+      const label = document.getElementById('postLabel');
+      const blurredHandle = document.getElementById('blurredHandle');
+
+      label.innerText = "Post #" + currentModel.postIndex;
+      blurredHandle.innerText = "@" + currentModel.username.slice(0, 2) + "••••••";
+      
+      // Instagram direct CDN media thumbnail proxy
+      thumb.src = `https://images.weserv.nl/?url=https://www.instagram.com/p/${currentModel.shortcode}/media/?size=l&output=jpg`;
+
+      loader.classList.add('hidden');
+      card.classList.remove('hidden');
+
+      // Reset Unlock States
+      document.getElementById('unlockBtn').classList.remove('hidden');
+      document.getElementById('timerContainer').classList.add('hidden');
+      document.getElementById('finalProfileLink').classList.add('hidden');
+      thumb.classList.add('blur-sm');
+    }
+
+    // Timer & Unlock Click Handler
+    document.getElementById('unlockBtn').addEventListener('click', () => {
+      const btn = document.getElementById('unlockBtn');
+      const timerBox = document.getElementById('timerContainer');
+      const pBar = document.getElementById('progressBar');
+      const countdown = document.getElementById('countdownText');
+      const finalLink = document.getElementById('finalProfileLink');
+      const thumb = document.getElementById('modelThumbnail');
+      const blurredHandle = document.getElementById('blurredHandle');
+      const unlockedText = document.getElementById('unlockedBtnText');
+
+      btn.classList.add('hidden');
+      timerBox.classList.remove('hidden');
+
+      let timeLeft = 5;
+      pBar.style.width = "0%";
+      
+      const interval = setInterval(() => {
+        timeLeft--;
+        const percentage = ((5 - timeLeft) / 5) * 100;
+        pBar.style.width = percentage + "%";
+        countdown.innerText = timeLeft + "s";
+
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          timerBox.classList.add('hidden');
+          
+          // Reveal Details
+          blurredHandle.innerText = "@" + currentModel.username;
+          thumb.classList.remove('blur-sm');
+          
+          finalLink.href = `https://www.instagram.com/${currentModel.username}/`;
+          unlockedText.innerText = `VISIT @${currentModel.username}`;
+          finalLink.classList.remove('hidden');
+        }
+      }, 1000);
+    });
+
+    // Render 6 Random Exploration Cards
+    function renderExploreGrid() {
+      const grid = document.getElementById('exploreGrid');
+      grid.innerHTML = "";
+
+      const sampleList = [...db].sort(() => 0.5 - Math.random()).slice(0, 6);
+
+      sampleList.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl overflow-hidden cursor-pointer hover:border-pink-500/50 transition duration-300 flex flex-col";
+        card.innerHTML = `
+          <div class="relative aspect-[9/12] bg-slate-950 overflow-hidden">
+            <img 
+              src="https://images.weserv.nl/?url=https://www.instagram.com/p/${item.shortcode}/media/?size=m&output=jpg" 
+              class="w-full h-full object-cover filter blur-[2px]"
+              loading="lazy"
+            >
+            <span class="absolute top-2 left-2 bg-black/70 text-[10px] text-slate-300 px-2 py-0.5 rounded font-mono">
+              #${item.postIndex}
+            </span>
+          </div>
+          <div class="p-2.5 bg-slate-900 flex justify-between items-center">
+            <span class="text-xs font-semibold text-slate-300 truncate">@${item.username.slice(0, 3)}••••</span>
+            <span class="text-[10px] bg-pink-500/20 text-pink-400 font-bold px-1.5 py-0.5 rounded">UNLOCK</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          currentModel = item;
+          renderHero();
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Search Box Listener
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = document.getElementById('searchInput').value.trim();
+      if (val) {
+        loadActiveModel(val);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', initVault);
+  </script>
+</body>
+</html>

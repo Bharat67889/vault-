@@ -43,7 +43,7 @@
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Enter Post # (e.g. 431)..." 
+        placeholder="Enter Post # (e.g. 420)..." 
         class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-9 pr-20 text-white placeholder-slate-500 focus:outline-none transition shadow-inner"
       >
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
@@ -192,7 +192,7 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ PRECISE TELE-USER MATCHING ENGINE -->
+  <!-- ⚙️ RESILIENT ENGINE SCRIPT -->
   <script>
     const QUEUE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
     const TELE_USER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
@@ -204,6 +204,7 @@
     let cardsRenderedCount = 0;
 
     function cleanSplitCSV(text) {
+      if (!text) return [];
       const clean = text.replace(/\r/g, '').trim();
       const lines = clean.split("\n");
       return lines.map(line => 
@@ -223,47 +224,45 @@
 
     async function initVault() {
       try {
-        const cacheBust = "&_cb=" + Date.now();
-
-        // Parallel Fetch
-        const [resQueue, resTele] = await Promise.all([
-          fetch(QUEUE_CSV_URL + cacheBust, { cache: "no-store" }),
-          fetch(TELE_USER_CSV_URL + cacheBust, { cache: "no-store" })
-        ]);
-
-        const queueText = await resQueue.text();
-        const teleText = await resTele.text();
-
-        const queueRows = cleanSplitCSV(queueText);
-        const teleRows = cleanSplitCSV(teleText);
-
-        // 1. Build Dictionary: Username (lowercase) -> Post No
-        const teleMap = {};
-        for (let i = 1; i < teleRows.length; i++) {
-          const pNo = parseInt(teleRows[i][0]);
-          const uName = (teleRows[i][1] || "").toLowerCase().trim();
-          if (!isNaN(pNo) && uName) {
-            teleMap[uName] = pNo;
+        // Step 1: Tele Map Read
+        let teleMap = {};
+        try {
+          const resTele = await fetch(TELE_USER_CSV_URL + "&t=" + Date.now());
+          if (resTele.ok) {
+            const teleText = await resTele.text();
+            const teleRows = cleanSplitCSV(teleText);
+            for (let i = 1; i < teleRows.length; i++) {
+              const pNo = parseInt(teleRows[i][0]);
+              const uName = (teleRows[i][1] || "").toLowerCase().trim();
+              if (!isNaN(pNo) && uName) {
+                teleMap[uName] = pNo;
+              }
+            }
           }
+        } catch (e) {
+          console.warn("Tele User CSV fetch warning:", e);
         }
 
-        // 2. Build Models DB with priority mapping
+        // Step 2: Queue Sheet Read
+        const resQueue = await fetch(QUEUE_CSV_URL + "&t=" + Date.now());
+        if (!resQueue.ok) throw new Error("Queue CSV failed");
+        const queueText = await resQueue.text();
+        const queueRows = cleanSplitCSV(queueText);
+
         db = [];
         for (let i = 1; i < queueRows.length; i++) {
           const row = queueRows[i];
           const shortcode = row[0];
           const username = row[1];
-          const status = (row[2] || "").toUpperCase();
+          const status = (row[2] || "").trim().toUpperCase();
 
-          if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
+          // Loose check: Agar COMPLETED ya reel shortcode valid hai
+          if (shortcode && shortcode.length > 3) {
             const cleanUser = (username || "").toLowerCase().trim();
-            
-            // Priority 1: Exact mapping from tele user tab
-            // Priority 2: Column D value (if any)
-            // Priority 3: Fallback Row Index
-            let finalPostNum = teleMap[cleanUser];
             const colD = parseInt(row[3]);
 
+            // Priority: Tele User Sheet Post No -> Column D -> Row Index
+            let finalPostNum = teleMap[cleanUser];
             if (!finalPostNum || isNaN(finalPostNum)) {
               finalPostNum = (!isNaN(colD) && colD > 0) ? colD : i;
             }
@@ -277,13 +276,14 @@
           }
         }
 
-        if (db.length === 0) throw new Error("Empty records.");
+        if (db.length === 0) throw new Error("No records in DB.");
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
         refreshGrid(8);
         setupIntersectionObserver();
       } catch (err) {
+        console.error("Vault init error:", err);
         document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load vault records.</p>`;
       }
     }
@@ -292,7 +292,7 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        // Default home view: Highest mapped post number
+        // Highest post number = latest
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
         currentModel = sorted[sorted.length - 1];
       } else {
@@ -306,12 +306,16 @@
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // 2. Match by exact username
+        // 2. Fallback Username
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
 
-        // 3. Fallback
+        // 3. Fallback Shortcode
+        if (!match) {
+          match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
+        }
+
         currentModel = match || db[db.length - 1];
       }
       

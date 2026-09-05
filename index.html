@@ -6,35 +6,26 @@
   <title>Pretty Ladies Vault | Discover Creator Profiles</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Instagram Official Native Embed Engine -->
-  <script async src="//www.instagram.com/embed.js"></script>
   <style>
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
       50% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.8); }
     }
     .pulse-btn { animation: pulseGlow 2s infinite; }
-    .glass-nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(14px); }
-    /* Fix native embed sizing inside container */
-    .instagram-media {
-      min-width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      border-radius: 1.5rem !important;
-    }
+    .glass-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(14px); }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white">
 
   <!-- 🧭 TOP HEADER -->
-  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800 px-4 py-3.5 flex items-center justify-between">
     <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
       <span class="text-2xl">🔥</span>
       <span class="font-black tracking-wide text-xl bg-gradient-to-r from-pink-500 via-rose-400 to-purple-500 bg-clip-text text-transparent">
         PRETTY LADIES VAULT
       </span>
     </div>
-    <div class="text-xs bg-slate-800 text-pink-400 font-bold px-3 py-1 rounded-full border border-pink-500/30 tracking-wider">
+    <div class="text-xs bg-slate-800 text-pink-400 font-extrabold px-3 py-1 rounded-full border border-pink-500/30 tracking-wider">
       VIP ACCESS
     </div>
   </header>
@@ -45,13 +36,13 @@
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Search Post # (e.g. 426) or Model..." 
+        placeholder="Enter Post # (e.g. 426)..." 
         class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-3 pl-10 pr-20 text-white placeholder-slate-500 focus:outline-none transition-all"
       >
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
       <button 
         type="submit" 
-        class="absolute right-1.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition"
+        class="absolute right-1.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition"
       >
         Search
       </button>
@@ -77,7 +68,6 @@
       <!-- Media Container -->
       <div class="relative aspect-[9/13] bg-black overflow-hidden flex items-center justify-center">
         
-        <!-- 1. Crystal Clear HD Photo Preview -->
         <img 
           id="modelThumbnail" 
           src="" 
@@ -86,30 +76,34 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- 2. Dynamic Official Instagram Native Player Host -->
-        <div id="nativeEmbedWrapper" class="hidden w-full h-full overflow-y-auto bg-black flex items-center justify-center">
-          <!-- Official Block injected on click -->
+        <!-- Direct Video / Telegram Host Frame -->
+        <iframe 
+          id="videoFrame" 
+          src="" 
+          class="hidden w-full h-full border-0 bg-black" 
+          allow="autoplay; fullscreen"
+          allowfullscreen>
+        </iframe>
+
+        <!-- 📌 NEW BADGE DESIGN: POST NO (Small) + NUMBER (Large & Bold) -->
+        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">POST NO.</span>
+          <span id="postLabel" class="text-lg font-black text-pink-400 tracking-tight leading-none">---</span>
         </div>
 
-        <!-- Top Badges -->
-        <div class="absolute top-3.5 left-3.5 bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-xs font-bold text-pink-300 flex items-center gap-1.5 z-10">
-          <i class="fa-brands fa-instagram text-pink-400"></i>
-          <span id="postLabel">Post #---</span>
-        </div>
-
-        <!-- 🎬 BOTTOM-LEFT PLAY/ACTION BUTTON -->
+        <!-- 🎬 WATCH REEL BUTTON (Bottom-Left) -->
         <button 
           id="playReelBtn" 
           onclick="togglePlayReel()"
           class="absolute bottom-20 left-4 z-20 bg-slate-900/90 hover:bg-pink-600 backdrop-blur-md border border-slate-700 hover:border-pink-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg transition duration-200"
         >
           <i id="playBtnIcon" class="fa-solid fa-play text-pink-400 text-xs"></i>
-          <span id="playBtnText">Watch Reel Preview</span>
+          <span id="playBtnText">Watch Video</span>
         </button>
 
-        <!-- Enlarged Username Details Box -->
+        <!-- Masked Handle Banner -->
         <div id="handleBanner" class="absolute bottom-3 inset-x-3 text-center z-10 pointer-events-none">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 px-4 py-2.5 rounded-2xl shadow-xl">
+          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 px-4 py-3 rounded-2xl shadow-xl">
             <span class="text-[11px] text-slate-400 uppercase tracking-widest font-bold block mb-0.5">INSTAGRAM HANDLE</span>
             <span id="blurredHandle" class="text-xl font-black text-pink-400 tracking-wider">@locked_user</span>
           </div>
@@ -160,14 +154,14 @@
         <h2 class="text-sm font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
           <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
         </h2>
-        <span class="text-[11px] text-slate-500 font-medium">Verified Active</span>
+        <span class="text-[11px] text-slate-500 font-bold">All Locked 🔒</span>
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Dynamically injected stream -->
+        <!-- Injected stream -->
       </div>
 
-      <!-- ⏳ Infinite Scroll Trigger Element -->
+      <!-- ⏳ Infinite Scroll Sentinel -->
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
       </div>
@@ -187,7 +181,6 @@
     let isPlaying = false;
     let observer = null;
 
-    // Strict Filter: Sirf COMPLETED ya DONE rows load hongi
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -220,7 +213,7 @@
     }
 
     function getThumbUrl(shortcode, size = 'l') {
-      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Creator+Profile`;
+      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Creator+Media`;
     }
 
     function handleThumbError(img) {
@@ -242,7 +235,6 @@
         const requestedId = urlParams.get('id');
 
         loadActiveModel(requestedId);
-        
         appendBatchToGrid(8);
         setupIntersectionObserver();
       } catch (err) {
@@ -270,19 +262,20 @@
       const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
-      const wrapper = document.getElementById('nativeEmbedWrapper');
+      const vFrame = document.getElementById('videoFrame');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       isPlaying = false;
-      wrapper.innerHTML = "";
-      wrapper.classList.add('hidden');
+      vFrame.src = "";
+      vFrame.classList.add('hidden');
       thumb.classList.remove('hidden');
-      playBtnText.innerText = "Watch Reel Preview";
+      playBtnText.innerText = "Watch Video";
       playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
 
-      label.innerText = "Post #" + currentModel.postIndex;
-      blurredHandle.innerText = "@" + currentModel.username.slice(0, 3) + "••••••";
+      // Bold Post Number
+      label.innerText = currentModel.postIndex;
+      blurredHandle.innerText = "@••••••••••";
       
       thumb.dataset.failedOnce = "";
       thumb.src = getThumbUrl(currentModel.shortcode, 'l');
@@ -296,33 +289,24 @@
     }
 
     function togglePlayReel() {
-      const wrapper = document.getElementById('nativeEmbedWrapper');
+      const vFrame = document.getElementById('videoFrame');
       const thumb = document.getElementById('modelThumbnail');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       if (!isPlaying) {
-        // Inject Official Authorized Instagram Block
-        wrapper.innerHTML = `
-          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/${currentModel.shortcode}/" data-instgrm-version="14">
-          </blockquote>
-        `;
-        wrapper.classList.remove('hidden');
+        // Embed load sequence
+        vFrame.src = `https://www.instagram.com/reel/${currentModel.shortcode}/embed/captioned/`;
+        vFrame.classList.remove('hidden');
         thumb.classList.add('hidden');
-        playBtnText.innerText = "Show Photo Preview";
+        playBtnText.innerText = "Show Photo";
         playBtnIcon.className = "fa-solid fa-image text-pink-400 text-xs";
-
-        // Trigger official embed script processing
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-
         isPlaying = true;
       } else {
-        wrapper.innerHTML = "";
-        wrapper.classList.add('hidden');
+        vFrame.src = "";
+        vFrame.classList.add('hidden');
         thumb.classList.remove('hidden');
-        playBtnText.innerText = "Watch Reel Preview";
+        playBtnText.innerText = "Watch Video";
         playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
         isPlaying = false;
       }
@@ -374,15 +358,17 @@
               src="${getThumbUrl(item.shortcode, 'm')}" 
               class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
               loading="lazy"
-              onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Creator+Profile'"
+              onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Model+Media'"
             >
-            <span class="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-sm text-[11px] text-pink-300 font-bold px-2.5 py-0.5 rounded-full border border-white/10">
-              #${item.postIndex}
-            </span>
+            <!-- 📌 BADGE: POST NO (Small) + NUMBER (Large) -->
+            <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-pink-500/30 flex items-baseline gap-1 shadow-md">
+              <span class="text-[9px] font-bold text-slate-400 uppercase">POST NO.</span>
+              <span class="text-xs font-black text-pink-400">${item.postIndex}</span>
+            </div>
           </div>
           <div class="p-3 bg-slate-900 flex justify-between items-center">
-            <span class="text-xs font-bold text-slate-200 truncate max-w-[95px]">@${item.username}</span>
-            <span class="text-[10px] bg-pink-500/20 text-pink-400 font-extrabold px-2 py-0.5 rounded-md border border-pink-500/30">VIEW</span>
+            <span class="text-xs font-bold text-slate-400">@••••••••</span>
+            <span class="text-[10px] bg-pink-500/20 text-pink-400 font-extrabold px-2.5 py-1 rounded-md border border-pink-500/30">UNLOCK 🔒</span>
           </div>
         `;
 

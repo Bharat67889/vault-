@@ -60,12 +60,12 @@
   <main class="max-w-md mx-auto w-full px-4 py-4 flex-grow">
     <div id="loader" class="text-center py-16">
       <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
-      <p class="text-sm text-slate-400 font-medium">Syncing verified vault creator...</p>
+      <p class="text-sm text-slate-400 font-medium">Loading verified creator video...</p>
     </div>
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
       
-      <!-- Media Container -->
+      <!-- Video / Media Container -->
       <div class="relative aspect-[9/13] bg-black overflow-hidden flex items-center justify-center">
         
         <img 
@@ -76,7 +76,7 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- 🚀 TELEGRAM NATIVE VIDEO STREAM FRAME -->
+        <!-- Direct Telegram Video Stream Frame -->
         <iframe 
           id="tgVideoFrame" 
           src="" 
@@ -85,7 +85,7 @@
           allowfullscreen>
         </iframe>
 
-        <!-- 📌 BIG PROMINENT POST NUMBER BADGE -->
+        <!-- 📌 POST NO (Small) + NUMBER (Large & Bold) -->
         <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
           <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 tracking-tight leading-none">---</span>
@@ -120,7 +120,6 @@
           <span>TAP TO REVEAL PROFILE ID</span>
         </button>
 
-        <!-- Progress Bar Box -->
         <div id="timerContainer" class="hidden space-y-2 pt-1">
           <div class="flex justify-between text-xs text-slate-300 font-bold">
             <span>Verifying & Decrypting Handle...</span>
@@ -135,7 +134,6 @@
           </div>
         </div>
 
-        <!-- Direct Instagram Profile Button -->
         <a 
           id="finalProfileLink" 
           href="#" 
@@ -154,12 +152,10 @@
         <h2 class="text-sm font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
           <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
         </h2>
-        <span class="text-[11px] text-slate-500 font-bold">All Locked 🔒</span>
+        <span class="text-[11px] text-slate-500 font-bold">Verified Synced</span>
       </div>
 
-      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Injected stream -->
-      </div>
+      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5"></div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
@@ -180,7 +176,7 @@
     let isPlaying = false;
     let observer = null;
 
-    // Strict Filter: Sirf COMPLETED ya DONE rows load hongi
+    // Strict Filter: Sirf wahi rows uthayega jinka tg_msg_id Column D me mapped hai!
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -190,9 +186,10 @@
         const shortcode = row[0];
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
-        const tgMsgId = row[3] || ""; // Column D: Future direct message_id
+        const tgMsgId = row[3] || ""; 
 
-        if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE")) {
+        // 🛡️ Filter: Completed hona chahiye AND tg_msg_id honi chahiye
+        if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE") && tgMsgId && !isNaN(parseInt(tgMsgId))) {
           result.push({
             shortcode: shortcode,
             username: username && username.length > 0 ? username : "creator",
@@ -225,25 +222,13 @@
       }
     }
 
-    // Dynamic Telegram Stream Resolver
-    function getTelegramEmbedUrl(model) {
-      // Agar Sheet ke Column D me direct id hai toh wahi use karo
-      if (model.tgMsgId && model.tgMsgId.length > 0) {
-        return `https://t.me/prettyladies4/${model.tgMsgId}?embed=1`;
-      }
-      // Method 1: Ratio calculate karke auto-link (Post index formula)
-      // Reference: Post index around ~500 maps to msg #527
-      const calculatedId = Math.max(1, model.postIndex + 25);
-      return `https://t.me/prettyladies4/${calculatedId}?embed=1`;
-    }
-
     async function initVault() {
       try {
         const res = await fetch(CSV_URL);
         const text = await res.text();
         db = parseCSV(text);
 
-        if (db.length === 0) throw new Error("No verified records found");
+        if (db.length === 0) throw new Error("No mapped records found yet.");
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedId = urlParams.get('id');
@@ -252,7 +237,7 @@
         appendBatchToGrid(8);
         setupIntersectionObserver();
       } catch (err) {
-        document.getElementById('loader').innerHTML = `<p class="text-rose-500 text-xs">Failed to sync verified vault records.</p>`;
+        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Syncing mapped videos from vault...</p>`;
       }
     }
 
@@ -261,8 +246,8 @@
         currentModel = db[db.length - 1];
       } else {
         const numericId = parseInt(query);
-        if (!isNaN(numericId) && numericId > 0 && numericId <= db.length) {
-          currentModel = db[numericId - 1];
+        if (!isNaN(numericId) && numericId > 0) {
+          currentModel = db.find(m => m.postIndex === numericId) || db[db.length - 1];
         } else {
           currentModel = db.find(m => m.shortcode.toLowerCase() === query.toLowerCase()) || db[db.length - 1];
         }
@@ -308,8 +293,8 @@
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       if (!isPlaying) {
-        // Stream video smoothly from Telegram embed without copyright wall
-        tgFrame.src = getTelegramEmbedUrl(currentModel);
+        // Direct telegram reel stream verified via tgMsgId
+        tgFrame.src = `https://t.me/prettyladies4/${currentModel.tgMsgId}?embed=1`;
         tgFrame.classList.remove('hidden');
         thumb.classList.add('hidden');
         playBtnText.innerText = "Show Photo";

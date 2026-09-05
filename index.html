@@ -68,6 +68,7 @@
       <!-- Video / Media Container -->
       <div class="relative aspect-[9/13] bg-black overflow-hidden flex items-center justify-center">
         
+        <!-- Crystal Clear HD Photo Preview -->
         <img 
           id="modelThumbnail" 
           src="" 
@@ -76,12 +77,13 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- Direct Telegram Video Stream Frame -->
+        <!-- Direct Shortcode-Synced Video Player -->
         <iframe 
-          id="tgVideoFrame" 
+          id="nativePlayerFrame" 
           src="" 
           class="hidden w-full h-full border-0 bg-black" 
-          allow="autoplay; fullscreen"
+          referrerpolicy="no-referrer-when-downgrade"
+          allow="autoplay; encrypted-media; fullscreen"
           allowfullscreen>
         </iframe>
 
@@ -120,6 +122,7 @@
           <span>TAP TO REVEAL PROFILE ID</span>
         </button>
 
+        <!-- Progress Bar Box -->
         <div id="timerContainer" class="hidden space-y-2 pt-1">
           <div class="flex justify-between text-xs text-slate-300 font-bold">
             <span>Verifying & Decrypting Handle...</span>
@@ -134,6 +137,7 @@
           </div>
         </div>
 
+        <!-- Direct Instagram Profile Button -->
         <a 
           id="finalProfileLink" 
           href="#" 
@@ -152,7 +156,7 @@
         <h2 class="text-sm font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
           <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
         </h2>
-        <span class="text-[11px] text-slate-500 font-bold">Verified Synced</span>
+        <span class="text-[11px] text-slate-500 font-bold">100% Synced</span>
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5"></div>
@@ -176,7 +180,7 @@
     let isPlaying = false;
     let observer = null;
 
-    // Strict Filter: Sirf wahi rows uthayega jinka tg_msg_id Column D me mapped hai!
+    // Strict Filter: Only COMPLETED rows
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -186,16 +190,13 @@
         const shortcode = row[0];
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
-        const tgMsgId = row[3] || ""; 
 
-        // 🛡️ Filter: Completed hona chahiye AND tg_msg_id honi chahiye
-        if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE") && tgMsgId && !isNaN(parseInt(tgMsgId))) {
+        if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE")) {
           result.push({
             shortcode: shortcode,
             username: username && username.length > 0 ? username : "creator",
             status: status,
-            postIndex: i,
-            tgMsgId: tgMsgId
+            postIndex: i
           });
         }
       }
@@ -212,7 +213,7 @@
     }
 
     function getThumbUrl(shortcode, size = 'l') {
-      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Creator+Media`;
+      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Model+Media`;
     }
 
     function handleThumbError(img) {
@@ -228,7 +229,7 @@
         const text = await res.text();
         db = parseCSV(text);
 
-        if (db.length === 0) throw new Error("No mapped records found yet.");
+        if (db.length === 0) throw new Error("No verified records found.");
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedId = urlParams.get('id');
@@ -237,7 +238,7 @@
         appendBatchToGrid(8);
         setupIntersectionObserver();
       } catch (err) {
-        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Syncing mapped videos from vault...</p>`;
+        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load verified vault records.</p>`;
       }
     }
 
@@ -261,13 +262,13 @@
       const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
-      const tgFrame = document.getElementById('tgVideoFrame');
+      const playerFrame = document.getElementById('nativePlayerFrame');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       isPlaying = false;
-      tgFrame.src = "";
-      tgFrame.classList.add('hidden');
+      playerFrame.src = "";
+      playerFrame.classList.add('hidden');
       thumb.classList.remove('hidden');
       playBtnText.innerText = "Watch Reel Preview";
       playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
@@ -287,22 +288,24 @@
     }
 
     function togglePlayReel() {
-      const tgFrame = document.getElementById('tgVideoFrame');
+      const playerFrame = document.getElementById('nativePlayerFrame');
       const thumb = document.getElementById('modelThumbnail');
       const playBtnText = document.getElementById('playBtnText');
       const playBtnIcon = document.getElementById('playBtnIcon');
 
       if (!isPlaying) {
-        // Direct telegram reel stream verified via tgMsgId
-        tgFrame.src = `https://t.me/prettyladies4/${currentModel.tgMsgId}?embed=1`;
-        tgFrame.classList.remove('hidden');
+        // Direct Shortcode Play URL: 100% matched to thumbnail
+        // Using clean captioned embed with dynamic cachebuster to bypass repeat blocks
+        playerFrame.src = `https://www.instagram.com/reel/${currentModel.shortcode}/embed/captioned/?cr=1&v=14&wp=540&rd=${encodeURIComponent(window.location.origin)}&rp=${encodeURIComponent(window.location.pathname)}`;
+        
+        playerFrame.classList.remove('hidden');
         thumb.classList.add('hidden');
         playBtnText.innerText = "Show Photo";
         playBtnIcon.className = "fa-solid fa-image text-pink-400 text-xs";
         isPlaying = true;
       } else {
-        tgFrame.src = "";
-        tgFrame.classList.add('hidden');
+        playerFrame.src = "";
+        playerFrame.classList.add('hidden');
         thumb.classList.remove('hidden');
         playBtnText.innerText = "Watch Reel Preview";
         playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";

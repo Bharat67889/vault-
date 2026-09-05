@@ -192,10 +192,14 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ RESILIENT ENGINE SCRIPT -->
+  <!-- ⚙️ UNCRASHABLE ENGINE SCRIPT -->
   <script>
-    const QUEUE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
-    const TELE_USER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
+    // Primary Main Queue Sheet
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    
+    // Tele User Map Tab
+    const TELE_USER_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
+    
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
@@ -203,12 +207,10 @@
     let observer = null;
     let cardsRenderedCount = 0;
 
-    function cleanSplitCSV(text) {
+    function cleanLines(text) {
       if (!text) return [];
-      const clean = text.replace(/\r/g, '').trim();
-      const lines = clean.split("\n");
-      return lines.map(line => 
-        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
+      return text.replace(/\r/g, '').trim().split("\n").map(l => 
+        l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
       );
     }
 
@@ -224,67 +226,68 @@
 
     async function initVault() {
       try {
-        // Step 1: Tele Map Read
-        let teleMap = {};
+        // Step 1: Safe Fetch Tele User Map
+        const teleMap = {};
         try {
-          const resTele = await fetch(TELE_USER_CSV_URL + "&t=" + Date.now());
-          if (resTele.ok) {
-            const teleText = await resTele.text();
-            const teleRows = cleanSplitCSV(teleText);
-            for (let i = 1; i < teleRows.length; i++) {
-              const pNo = parseInt(teleRows[i][0]);
-              const uName = (teleRows[i][1] || "").toLowerCase().trim();
+          const tRes = await fetch(TELE_USER_URL + "&cb=" + Date.now());
+          if (tRes.ok) {
+            const tText = await tRes.text();
+            const tRows = cleanLines(tText);
+            for (let i = 1; i < tRows.length; i++) {
+              const pNo = parseInt(tRows[i][0]);
+              const uName = (tRows[i][1] || "").toLowerCase().trim();
               if (!isNaN(pNo) && uName) {
                 teleMap[uName] = pNo;
               }
             }
           }
-        } catch (e) {
-          console.warn("Tele User CSV fetch warning:", e);
+        } catch (te) {
+          console.warn("Tele User map fetch skipped, using queue fallback");
         }
 
-        // Step 2: Queue Sheet Read
-        const resQueue = await fetch(QUEUE_CSV_URL + "&t=" + Date.now());
-        if (!resQueue.ok) throw new Error("Queue CSV failed");
-        const queueText = await resQueue.text();
-        const queueRows = cleanSplitCSV(queueText);
+        // Step 2: Main Queue Fetch
+        const qRes = await fetch(CSV_URL + "&cb=" + Date.now());
+        const qText = await qRes.text();
+        const qRows = cleanLines(qText);
 
         db = [];
-        for (let i = 1; i < queueRows.length; i++) {
-          const row = queueRows[i];
+        for (let i = 1; i < qRows.length; i++) {
+          const row = qRows[i];
           const shortcode = row[0];
-          const username = row[1];
+          const username = row[1] || "creator";
           const status = (row[2] || "").trim().toUpperCase();
 
-          // Loose check: Agar COMPLETED ya reel shortcode valid hai
           if (shortcode && shortcode.length > 3) {
-            const cleanUser = (username || "").toLowerCase().trim();
+            const cleanUser = username.toLowerCase().trim();
             const colD = parseInt(row[3]);
 
-            // Priority: Tele User Sheet Post No -> Column D -> Row Index
-            let finalPostNum = teleMap[cleanUser];
-            if (!finalPostNum || isNaN(finalPostNum)) {
-              finalPostNum = (!isNaN(colD) && colD > 0) ? colD : i;
+            // Exact sync from tele user -> Column D -> Row Index
+            let finalPost = teleMap[cleanUser];
+            if (!finalPost || isNaN(finalPost)) {
+              finalPost = (!isNaN(colD) && colD > 0) ? colD : i;
             }
 
             db.push({
               shortcode: shortcode,
-              username: username && username.length > 0 ? username : "creator",
+              username: username,
               status: status,
-              postIndex: finalPostNum
+              postIndex: finalPost
             });
           }
         }
 
-        if (db.length === 0) throw new Error("No records in DB.");
+        if (db.length === 0) throw new Error("Empty DB");
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
         refreshGrid(8);
         setupIntersectionObserver();
+
       } catch (err) {
-        console.error("Vault init error:", err);
-        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load vault records.</p>`;
+        console.error("Critical Load Error:", err);
+        // Fallback: Show loader error only if queue sheet actually failed
+        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Connecting to Vault...</p>`;
+        setTimeout(initVault, 2500); // Auto-retry
       }
     }
 
@@ -292,7 +295,7 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        // Highest post number = latest
+        // Highest post number = latest uploaded model
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
         currentModel = sorted[sorted.length - 1];
       } else {
@@ -301,17 +304,17 @@
 
         let match = null;
 
-        // 1. Direct Post Index match
+        // 1. Direct exact Post Index match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // 2. Fallback Username
+        // 2. Fallback Username match
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
 
-        // 3. Fallback Shortcode
+        // 3. Fallback Shortcode match
         if (!match) {
           match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
         }

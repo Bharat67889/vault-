@@ -54,7 +54,7 @@
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Enter Post # (e.g. 420)..." 
+        placeholder="Enter Post # (e.g. 431)..." 
         class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-9 pr-20 text-white placeholder-slate-500 focus:outline-none transition shadow-inner"
       >
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
@@ -77,7 +77,7 @@
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
       
-      <!-- Spinner -->
+      <!-- 💫 CARD TRANSITION SPINNER -->
       <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Model...</span>
@@ -172,7 +172,7 @@
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Cards -->
+        <!-- Dynamic cards -->
       </div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
@@ -203,14 +203,10 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ BULLETPROOF DUAL-FETCH ENGINE -->
+  <!-- ⚙️ DUAL-CSV MAPPING ENGINE -->
   <script>
-    // New Primary Link provided by user
-    const PRIMARY_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?output=csv";
-    
-    // Tele User Tab Verified Link (Post No & Username)
-    const TELE_USER_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
-
+    const QUEUE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    const TELE_USER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
@@ -220,8 +216,8 @@
 
     function cleanLines(text) {
       if (!text) return [];
-      return text.replace(/\r/g, '').trim().split("\n").map(l => 
-        l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
+      return text.replace(/\r/g, '').trim().split("\n").map(line => 
+        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
       );
     }
 
@@ -236,44 +232,45 @@
     }
 
     async function initVault() {
-      console.log("🚀 Initializing Vault...");
       try {
         let teleMap = {};
 
-        // 1. Read Tele User Tab
+        // 1. Fetch tele user tab
         try {
-          const tRes = await fetch(TELE_USER_CSV);
+          const tRes = await fetch(TELE_USER_CSV_URL);
           if (tRes.ok) {
             const tText = await tRes.text();
             const tRows = cleanLines(tText);
             for (let i = 1; i < tRows.length; i++) {
               const pNo = parseInt(tRows[i][0]);
               const uName = (tRows[i][1] || "").toLowerCase().trim();
-              if (!isNaN(pNo) && uName) teleMap[uName] = pNo;
+              if (!isNaN(pNo) && uName) {
+                teleMap[uName] = pNo;
+              }
             }
-            console.log("✅ Tele Map Parsed:", Object.keys(teleMap).length, "users");
           }
-        } catch(e) {
-          console.warn("Tele User CSV fetch skipped", e);
+        } catch (te) {
+          console.warn("Tele User CSV fetch skipped", te);
         }
 
-        // 2. Read Primary CSV
-        const pRes = await fetch(PRIMARY_CSV);
-        if (!pRes.ok) throw new Error("HTTP Status " + pRes.status);
-        const pText = await pRes.text();
-        const pRows = cleanLines(pText);
+        // 2. Fetch Queue tab
+        const qRes = await fetch(QUEUE_CSV_URL);
+        if (!qRes.ok) throw new Error("HTTP " + qRes.status + " fetching Queue");
+        const qText = await qRes.text();
+        const qRows = cleanLines(qText);
 
         db = [];
-        for (let i = 1; i < pRows.length; i++) {
-          const row = pRows[i];
+        for (let i = 1; i < qRows.length; i++) {
+          const row = qRows[i];
           const shortcode = row[0];
           const username = row[1] || "creator";
+          const status = (row[2] || "").trim().toUpperCase();
 
           if (shortcode && shortcode.length > 3) {
             const cleanUser = username.toLowerCase().trim();
             const colD = parseInt(row[3]);
 
-            // Exact match: teleMap > Column D > Index
+            // Exact match priority: tele user > Column D > row index
             let finalPost = teleMap[cleanUser];
             if (!finalPost || isNaN(finalPost)) {
               finalPost = (!isNaN(colD) && colD > 0) ? colD : i;
@@ -282,17 +279,13 @@
             db.push({
               shortcode: shortcode,
               username: username,
-              status: "COMPLETED",
+              status: status,
               postIndex: finalPost
             });
           }
         }
 
-        if (db.length === 0) {
-          throw new Error("No entries found in sheet.");
-        }
-
-        console.log("🎉 Vault Models Ready:", db.length);
+        if (db.length === 0) throw new Error("No data in Queue sheet");
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
@@ -316,6 +309,7 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
+        // Highest post number = latest uploaded model
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
         window.currentModel = sorted[sorted.length - 1];
       } else {

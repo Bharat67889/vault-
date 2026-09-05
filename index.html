@@ -2,72 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pretty Ladies Vault | Discover Creator Profiles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pretty Ladies Vault</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- 💥 ADSTERRA GLOBAL POPUNDER -->
+  <script src="https://pl31203218.profitableratecpmnetwork.com/43/81/d2/4381d2d88795c79109d2e0352db05174.js"></script>
+
+  <!-- 💥 ADSTERRA SOCIAL BAR -->
+  <script src="https://pl31203216.profitableratecpmnetwork.com/70/52/41/7052412a0b51921ada418cafede8469b.js"></script>
+
   <style>
     @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
-      50% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.8); }
+      0%, 100% { box-shadow: 0 0 12px rgba(236, 72, 153, 0.4); }
+      50% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.7); }
     }
-    .pulse-btn { animation: pulseGlow 2s infinite; }
-    .glass-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(14px); }
+    .pulse-btn { animation: pulseGlow 1.8s infinite; }
+    .glass-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-16">
 
-  <!-- 🧭 TOP HEADER -->
-  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800 px-4 py-3.5 flex items-center justify-between">
-    <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
-      <span class="text-2xl">🔥</span>
-      <span class="font-black tracking-wide text-xl bg-gradient-to-r from-pink-500 via-rose-400 to-purple-500 bg-clip-text text-transparent">
+  <!-- 🧭 COMPACT HEADER -->
+  <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 px-3.5 py-2 flex items-center justify-between">
+    <div class="flex items-center gap-1.5 cursor-pointer" onclick="window.location.href=window.location.pathname">
+      <span class="text-lg">🔥</span>
+      <span class="font-extrabold text-sm tracking-wide bg-gradient-to-r from-pink-500 via-rose-400 to-purple-400 bg-clip-text text-transparent">
         PRETTY LADIES VAULT
       </span>
     </div>
-    <div class="text-xs bg-slate-800 text-pink-400 font-extrabold px-3 py-1 rounded-full border border-pink-500/30 tracking-wider">
-      VIP ACCESS
+    <div class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
+      Daily Sync
     </div>
   </header>
 
-  <!-- 🔍 SEARCH BAR SECTION -->
-  <section class="max-w-md mx-auto w-full px-4 pt-4">
+  <!-- 🔍 SEARCH BAR -->
+  <div class="max-w-md mx-auto w-full px-3 pt-2">
     <form id="searchForm" class="relative flex items-center">
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Enter Post # (e.g. 426)..." 
-        class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-3 pl-10 pr-20 text-white placeholder-slate-500 focus:outline-none transition-all"
+        placeholder="Enter Post # (e.g. 283)..." 
+        class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-xs rounded-lg py-1.5 pl-8 pr-16 text-white placeholder-slate-500 focus:outline-none transition"
       >
-      <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
+      <i class="fa-solid fa-magnifying-glass absolute left-2.5 text-slate-500 text-xs"></i>
       <button 
         type="submit" 
-        class="absolute right-1.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition"
+        class="absolute right-1 bg-pink-600 hover:bg-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-md transition"
       >
-        Search
+        Find
       </button>
     </form>
-  </section>
-
-  <!-- 📢 TOP AD BANNER CONTAINER -->
-  <div class="max-w-md mx-auto w-full px-4 pt-3">
-    <div id="ad-top" class="w-full min-h-[50px] bg-slate-900/60 rounded-xl border border-dashed border-slate-800 flex items-center justify-center text-xs text-slate-500">
-      <span>[ Sponsored Link / Advertisement ]</span>
-    </div>
   </div>
 
-  <!-- 🎯 MAIN HERO: TARGET CREATOR PROFILE UNLOCK -->
-  <main class="max-w-md mx-auto w-full px-4 py-4 flex-grow">
-    <div id="loader" class="text-center py-16">
-      <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
-      <p class="text-sm text-slate-400 font-medium">Syncing verified creator card...</p>
+  <!-- 🎯 ULTRA COMPACT HERO SECTION -->
+  <main class="max-w-md mx-auto w-full px-3 pt-2 flex-grow">
+    
+    <div id="loader" class="text-center py-12">
+      <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-2xl mb-2"></i>
+      <p class="text-xs text-slate-400">Loading model vault...</p>
     </div>
 
-    <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+    <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl relative">
       
-      <!-- HD Photo Card Container -->
-      <div class="relative aspect-[9/13] bg-black overflow-hidden flex items-center justify-center">
-        
+      <!-- 💫 SMOOTH CARD TRANSITION SPINNER OVERLAY -->
+      <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center gap-2">
+        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl"></i>
+        <span class="text-[11px] font-bold text-pink-300 tracking-wider">Syncing Post...</span>
+      </div>
+
+      <!-- Compressed Photo Container -->
+      <div class="relative h-64 sm:h-72 w-full bg-black overflow-hidden flex items-center justify-center">
         <img 
           id="modelThumbnail" 
           src="" 
@@ -76,96 +82,125 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- Subtle Top & Bottom Gradient Overlay for readability -->
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/30 pointer-events-none"></div>
 
-        <!-- 📌 POST NO (Small) + NUMBER (Large & Bold) -->
-        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
-          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">POST NO.</span>
-          <span id="postLabel" class="text-lg font-black text-pink-400 tracking-tight leading-none">---</span>
+        <!-- 📌 POST NO BADGE -->
+        <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-md px-2.5 py-1 rounded-xl border border-pink-500/40 flex items-baseline gap-1 z-10 shadow-md">
+          <span class="text-[9px] font-bold text-slate-400 uppercase">POST NO.</span>
+          <span id="postLabel" class="text-sm font-black text-pink-400 leading-none">---</span>
         </div>
 
-        <!-- Masked Handle Banner -->
-        <div id="handleBanner" class="absolute bottom-3 inset-x-3 text-center z-10 pointer-events-none">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 px-4 py-3 rounded-2xl shadow-xl">
-            <span class="text-[11px] text-slate-400 uppercase tracking-widest font-bold block mb-0.5">INSTAGRAM HANDLE</span>
-            <span id="blurredHandle" class="text-xl font-black text-pink-400 tracking-wider">@locked_user</span>
+        <!-- Masked Handle Floating Pill -->
+        <div id="handleBanner" class="absolute bottom-2.5 inset-x-3 text-center z-10">
+          <div class="inline-block w-full bg-slate-950/85 backdrop-blur-md border border-slate-800 py-1.5 px-3 rounded-xl shadow-lg">
+            <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold block">INSTAGRAM HANDLE</span>
+            <span id="blurredHandle" class="text-sm font-black text-pink-400 tracking-wider">@••••••••••</span>
           </div>
         </div>
       </div>
 
       <!-- Action & Timer Section -->
-      <div class="p-5 space-y-4 bg-slate-900">
+      <div class="p-3 space-y-2 bg-slate-900">
         <button 
           id="unlockBtn" 
-          class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-extrabold py-4 px-4 rounded-2xl text-base tracking-wide flex items-center justify-center gap-2.5 transition active:scale-98"
+          class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-black py-2.5 px-3 rounded-xl text-xs tracking-wider flex items-center justify-center gap-2 transition active:scale-98"
         >
-          <i class="fa-solid fa-lock text-base"></i>
+          <i class="fa-solid fa-lock text-xs"></i>
           <span>TAP TO REVEAL PROFILE ID</span>
         </button>
 
-        <!-- Progress Bar Box -->
-        <div id="timerContainer" class="hidden space-y-2 pt-1">
-          <div class="flex justify-between text-xs text-slate-300 font-bold">
-            <span>Verifying & Decrypting Handle...</span>
+        <div id="timerContainer" class="hidden space-y-2 pt-0.5">
+          <div class="flex justify-between text-[11px] text-slate-300 font-bold">
+            <span>Decrypting Handle...</span>
             <span id="countdownText" class="text-pink-400 font-bold">5s</span>
           </div>
-          <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2.5 rounded-full w-0 transition-all duration-1000"></div>
+          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full w-0 transition-all duration-1000"></div>
           </div>
           
-          <div id="ad-mid-wait" class="min-h-[50px] bg-slate-950/60 rounded-xl border border-dashed border-slate-800 flex items-center justify-center text-[10px] text-slate-500 mt-2">
-            <span>[ Advertisement Slot ]</span>
+          <!-- 📢 AD SLOT: 300x250 BANNER -->
+          <div class="flex justify-center items-center pt-2 overflow-hidden rounded-xl bg-slate-950/60 border border-slate-800 p-1">
+            <script>
+              atOptions = {
+                'key' : '6804faa82225aa5efc3987659938b8ef',
+                'format' : 'iframe',
+                'height' : 250,
+                'width' : 300,
+                'params' : {}
+              };
+            </script>
+            <script src="https://www.highrevenueformat.com/6804faa82225aa5efc3987659938b8ef/invoke.js"></script>
           </div>
         </div>
 
-        <!-- Direct Instagram Profile Button -->
         <a 
           id="finalProfileLink" 
           href="#" 
           target="_blank" 
-          class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-4 px-4 rounded-2xl text-base tracking-wide flex items-center justify-center gap-2 text-center transition shadow-lg shadow-emerald-950 active:scale-98"
+          class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-3 rounded-xl text-xs tracking-wide flex items-center justify-center gap-1.5 text-center transition shadow-lg shadow-emerald-950 active:scale-98"
         >
-          <i class="fa-brands fa-instagram text-xl"></i>
-          <span id="unlockedBtnText">OPEN INSTAGRAM PROFILE</span>
+          <i class="fa-brands fa-instagram text-sm"></i>
+          <span id="unlockedBtnText">OPEN PROFILE</span>
         </a>
       </div>
     </div>
 
-    <!-- 🔥 EXPLORE MORE MODELS GRID -->
-    <div class="mt-8">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
-          <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
+    <!-- 📢 AD SLOT: NATIVE BANNER -->
+    <div class="mt-4 rounded-xl overflow-hidden bg-slate-900/50 border border-slate-800 p-1">
+      <script async="async" data-cfasync="false" src="https://pl31203224.profitableratecpmnetwork.com/ebc9cc75cbd35e9ff229beb64be68069/invoke.js"></script>
+      <div id="container-ebc9cc75cbd35e9ff229beb64be68069"></div>
+    </div>
+
+    <!-- 🔥 ENDLESS VAULT STREAM -->
+    <div class="mt-4">
+      <div class="flex items-center justify-between mb-2 px-0.5">
+        <h2 class="text-xs font-black text-slate-200 tracking-wider uppercase flex items-center gap-1.5">
+          <span class="text-pink-500 text-sm">✨</span> Endless Vault Stream
         </h2>
-        <span class="text-[11px] text-slate-500 font-bold">All Locked 🔒</span>
+        <span class="text-[10px] text-slate-500 font-bold">Auto Refreshed</span>
       </div>
 
-      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Dynamically injected stream -->
+      <div id="exploreGrid" class="grid grid-cols-2 gap-2.5">
+        <!-- Dynamically injected cards -->
       </div>
 
-      <!-- ⏳ Infinite Scroll Sentinel -->
-      <div id="scrollSentinel" class="py-8 flex justify-center items-center">
-        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
+      <div id="scrollSentinel" class="py-6 flex justify-center items-center">
+        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-lg"></i>
       </div>
     </div>
   </main>
 
-  <footer class="mt-auto py-5 border-t border-slate-900 text-center text-xs text-slate-500">
+  <!-- 💬 FLOATING TELEGRAM NO-ADS BUBBLE -->
+  <aside aria-label="Telegram Channel" class="fixed bottom-3.5 right-3.5 z-50">
+    <a 
+      href="https://t.me/PRETTYLADIES4" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      class="flex items-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white pl-2.5 pr-3.5 py-2 rounded-full shadow-2xl border border-sky-300/40 transition-transform active:scale-95 group backdrop-blur-md"
+    >
+      <div class="w-7 h-7 rounded-full bg-white text-sky-600 flex items-center justify-center text-sm shadow group-hover:rotate-12 transition-transform">
+        <i class="fa-brands fa-telegram"></i>
+      </div>
+      <div class="flex flex-col text-left leading-none">
+        <span class="text-[9px] font-bold text-sky-100 uppercase tracking-tighter">Ad-Free Access</span>
+        <span class="text-xs font-black tracking-tight">Join Telegram</span>
+      </div>
+    </a>
+  </aside>
+
+  <footer class="mt-auto py-3 border-t border-slate-900 text-center text-[10px] text-slate-600">
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ ENGINE JAVASCRIPT LOGIC -->
+  <!-- ⚙️ ENGINE LOGIC -->
   <script>
-    // Direct CSV endpoint for Queue tab (gid=805147059)
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
     let currentModel = null;
     let observer = null;
 
-    // 🛡️ STRICT FILTER: Only COMPLETED rows are allowed
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -176,7 +211,6 @@
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
 
-        // Strictly COMPLETED check
         if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
           result.push({
             shortcode: shortcode,
@@ -199,7 +233,7 @@
     }
 
     function getThumbUrl(shortcode, size = 'l') {
-      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Creator+Media`;
+      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model`;
     }
 
     function handleThumbError(img) {
@@ -220,15 +254,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         const requestedId = urlParams.get('id');
 
-        loadActiveModel(requestedId);
-        appendBatchToGrid(8);
+        loadActiveModel(requestedId, false);
+        refreshGrid(8);
         setupIntersectionObserver();
       } catch (err) {
         document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load vault records.</p>`;
       }
     }
 
-    function loadActiveModel(query) {
+    function loadActiveModel(query, triggerRefresh = true) {
       if (!query) {
         currentModel = db[db.length - 1];
       } else {
@@ -236,24 +270,38 @@
         if (!isNaN(numericId) && numericId > 0) {
           currentModel = db.find(m => m.postIndex === numericId) || db[db.length - 1];
         } else {
-          currentModel = db.find(m => m.shortcode.toLowerCase() === query.toLowerCase()) || db[db.length - 1];
+          currentModel = db.find(m => m.shortcode.toLowerCase() === String(query).toLowerCase()) || db[db.length - 1];
         }
       }
+      
       renderHero();
+
+      if (triggerRefresh) {
+        refreshGrid(8);
+      }
     }
 
     function renderHero() {
       const loader = document.getElementById('loader');
       const card = document.getElementById('contentCard');
+      const cardSpinner = document.getElementById('cardSpinner');
       const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
+
+      cardSpinner.classList.remove('hidden');
 
       label.innerText = currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
       
       thumb.dataset.failedOnce = "";
       thumb.src = getThumbUrl(currentModel.shortcode, 'l');
+
+      thumb.onload = () => {
+        cardSpinner.classList.add('hidden');
+      };
+
+      setTimeout(() => { cardSpinner.classList.add('hidden'); }, 1200);
 
       loader.classList.add('hidden');
       card.classList.remove('hidden');
@@ -263,7 +311,7 @@
       document.getElementById('finalProfileLink').classList.add('hidden');
     }
 
-    // Reveal Logic
+    // 💥 UNLOCK + SMARTLINK MONETIZATION TRIGGER
     document.getElementById('unlockBtn').addEventListener('click', () => {
       const btn = document.getElementById('unlockBtn');
       const timerBox = document.getElementById('timerContainer');
@@ -272,6 +320,13 @@
       const finalLink = document.getElementById('finalProfileLink');
       const blurredHandle = document.getElementById('blurredHandle');
       const unlockedText = document.getElementById('unlockedBtnText');
+
+      // Trigger Smartlink Pop in background tab
+      try {
+        const adWindow = window.open(SMARTLINK_URL, '_blank');
+        if (adWindow) adWindow.blur();
+        window.focus();
+      } catch(e) {}
 
       btn.classList.add('hidden');
       timerBox.classList.remove('hidden');
@@ -297,37 +352,44 @@
       }, 1000);
     });
 
-    // Random Endless Feed
+    // Dynamic Grid Refresh & Re-shuffle
+    function refreshGrid(count = 8) {
+      const grid = document.getElementById('exploreGrid');
+      grid.innerHTML = "";
+      appendBatchToGrid(count);
+    }
+
     function appendBatchToGrid(count = 6) {
       const grid = document.getElementById('exploreGrid');
       const randomized = shuffleArray(db).slice(0, count);
 
       randomized.forEach(item => {
         const card = document.createElement('div');
-        card.className = "bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden cursor-pointer hover:border-pink-500/60 transition duration-300 flex flex-col group shadow-lg";
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl overflow-hidden cursor-pointer hover:border-pink-500/60 transition duration-200 flex flex-col group shadow-md";
         card.innerHTML = `
-          <div class="relative aspect-[9/13] bg-slate-950 overflow-hidden">
+          <div class="relative h-44 bg-slate-950 overflow-hidden">
             <img 
               src="${getThumbUrl(item.shortcode, 'm')}" 
-              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
               loading="lazy"
-              onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Model+Media'"
+              onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model'"
             >
-            <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-pink-500/30 flex items-baseline gap-1 shadow-md">
-              <span class="text-[9px] font-bold text-slate-400 uppercase">POST NO.</span>
+            <div class="absolute top-2 left-2 bg-black/85 backdrop-blur-sm px-2 py-0.5 rounded-lg border border-pink-500/30 flex items-baseline gap-1 shadow">
+              <span class="text-[8px] font-bold text-slate-400 uppercase">POST NO.</span>
               <span class="text-xs font-black text-pink-400">${item.postIndex}</span>
             </div>
           </div>
-          <div class="p-3 bg-slate-900 flex justify-between items-center">
-            <span class="text-xs font-bold text-slate-400">@••••••••</span>
-            <span class="text-[10px] bg-pink-500/20 text-pink-400 font-extrabold px-2.5 py-1 rounded-md border border-pink-500/30">UNLOCK 🔒</span>
+          <div class="p-2 bg-slate-900 flex justify-between items-center">
+            <span class="text-[11px] font-bold text-slate-400">@••••••••</span>
+            <span class="text-[9px] bg-pink-500/20 text-pink-400 font-black px-2 py-0.5 rounded border border-pink-500/30">UNLOCK 🔒</span>
           </div>
         `;
 
         card.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          currentModel = item;
-          renderHero();
+          const newUrl = window.location.pathname + '?id=' + item.postIndex;
+          window.history.pushState({ path: newUrl }, '', newUrl);
+          loadActiveModel(item.postIndex, true);
         });
 
         grid.appendChild(card);
@@ -342,11 +404,11 @@
           if (entry.isIntersecting) {
             setTimeout(() => {
               appendBatchToGrid(6);
-            }, 250);
+            }, 200);
           }
         });
       }, {
-        rootMargin: '250px'
+        rootMargin: '200px'
       });
 
       observer.observe(sentinel);
@@ -355,7 +417,11 @@
     document.getElementById('searchForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const val = document.getElementById('searchInput').value.trim();
-      if (val) loadActiveModel(val);
+      if (val) {
+        const newUrl = window.location.pathname + '?id=' + val;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+        loadActiveModel(val, true);
+      }
     });
 
     window.addEventListener('DOMContentLoaded', initVault);

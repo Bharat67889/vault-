@@ -1,183 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pretty Ladies Vault | Discover Creator Profiles</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script src="https://pl31203218.profitableratecpmnetwork.com/43/81/d2/4381d2d88795c79109d2e0352db05174.js"></script>
-
-  <script src="https://pl31203216.profitableratecpmnetwork.com/70/52/41/7052412a0b51921ada418cafede8469b.js"></script>
-
-  <style>
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 16px rgba(236, 72, 153, 0.4); }
-      50% { box-shadow: 0 0 28px rgba(236, 72, 153, 0.85); }
-    }
-    .pulse-btn { animation: pulseGlow 2s infinite; }
-    .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px); }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-20">
-
-  <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 px-4 py-3 flex items-center justify-between shadow-lg">
-    <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href = window.location.origin + window.location.pathname;">
-      <span class="text-xl">🔥</span>
-      <span class="font-black text-base tracking-wide bg-gradient-to-r from-pink-500 via-rose-400 to-purple-400 bg-clip-text text-transparent">
-        PRETTY LADIES VAULT
-      </span>
-    </div>
-    <div class="text-[11px] font-bold text-pink-400 bg-pink-950/40 border border-pink-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-      Daily Sync
-    </div>
-  </header>
-
-  <div class="max-w-md mx-auto w-full px-4 pt-3.5">
-    <form id="searchForm" class="relative flex items-center">
-      <input 
-        type="text" 
-        id="searchInput" 
-        placeholder="Enter Post # (e.g. 431)..." 
-        class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-9 pr-20 text-white placeholder-slate-500 focus:outline-none transition shadow-inner"
-      >
-      <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
-      <button 
-        type="submit" 
-        class="absolute right-1.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition active:scale-95"
-      >
-        Search
-      </button>
-    </form>
-  </div>
-
-  <main class="max-w-md mx-auto w-full px-4 pt-4 flex-grow">
-    
-    <div id="loader" class="text-center py-20">
-      <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
-      <p class="text-sm text-slate-400 font-medium">Syncing verified vault model...</p>
-    </div>
-
-    <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
-      
-      <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
-        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
-        <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Model...</span>
-      </div>
-
-      <div class="relative aspect-[9/15] sm:aspect-[9/16] w-full bg-black overflow-hidden flex items-center justify-center">
-        <img 
-          id="modelThumbnail" 
-          src="" 
-          alt="Model Preview" 
-          class="w-full h-full object-cover transition duration-300"
-          onerror="handleThumbError(this)"
-        >
-
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
-
-        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
-          <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
-          <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
-        </div>
-
-        <div id="handleBanner" class="absolute bottom-3.5 inset-x-3.5 text-center z-10">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
-            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
-            <span id="blurredHandle" class="text-xl font-black text-pink-400 tracking-widest">@••••••••••</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 sm:p-5 space-y-3.5 bg-slate-900">
-        <button 
-          id="unlockBtn" 
-          class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2.5 transition active:scale-98"
-        >
-          <i class="fa-solid fa-lock text-base"></i>
-          <span>TAP TO REVEAL PROFILE ID</span>
-        </button>
-
-        <div id="timerContainer" class="hidden space-y-2.5 pt-1">
-          <div class="flex justify-between text-xs text-slate-300 font-bold">
-            <span>Decrypting Handle...</span>
-            <span id="countdownText" class="text-pink-400 font-extrabold">5s</span>
-          </div>
-          <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2.5 rounded-full w-0 transition-all duration-1000"></div>
-          </div>
-          
-          <div class="flex justify-center items-center pt-3 overflow-hidden rounded-2xl bg-slate-950/60 border border-slate-800 p-2 shadow-inner">
-            <script>
-              atOptions = {
-                'key' : '6804faa82225aa5efc3987659938b8ef',
-                'format' : 'iframe',
-                'height' : 250,
-                'width' : 300,
-                'params' : {}
-              };
-            </script>
-            <script src="https://www.highrevenueformat.com/6804faa82225aa5efc3987659938b8ef/invoke.js"></script>
-          </div>
-        </div>
-
-        <a 
-          id="finalProfileLink" 
-          href="#" 
-          target="_blank" 
-          class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2 text-center transition shadow-lg shadow-emerald-950 active:scale-98"
-        >
-          <i class="fa-brands fa-instagram text-lg"></i>
-          <span id="unlockedBtnText">OPEN INSTAGRAM PROFILE</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="mt-6 rounded-2xl overflow-hidden bg-slate-900/50 border border-slate-800 p-2 shadow-lg">
-      <script async="async" data-cfasync="false" src="https://pl31203224.profitableratecpmnetwork.com/ebc9cc75cbd35e9ff229beb64be68069/invoke.js"></script>
-      <div id="container-ebc9cc75cbd35e9ff229beb64be68069"></div>
-    </div>
-
-    <div class="mt-6">
-      <div class="flex items-center justify-between mb-3 px-1">
-        <h2 class="text-xs font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
-          <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
-        </h2>
-        <span class="text-[11px] text-slate-500 font-bold">Auto Refreshing</span>
-      </div>
-
-      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        </div>
-
-      <div id="scrollSentinel" class="py-8 flex justify-center items-center">
-        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
-      </div>
-    </div>
-  </main>
-
-  <aside aria-label="Telegram Channel" class="fixed bottom-6 right-5 z-50">
-    <a 
-      href="https://t.me/PRETTYLADIES4" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      class="flex items-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white pl-2 pr-3.5 py-2 rounded-full shadow-2xl border border-sky-300/40 transition-transform active:scale-90 group backdrop-blur-md"
-    >
-      <div class="w-8 h-8 rounded-full bg-white text-sky-600 flex items-center justify-center text-base shadow group-hover:rotate-12 transition-transform">
-        <i class="fa-brands fa-telegram"></i>
-      </div>
-      <div class="flex flex-col text-left leading-none">
-        <span class="text-[9px] font-bold text-sky-100 uppercase tracking-tighter">Ad-Free</span>
-        <span class="text-xs font-black tracking-tight">Telegram</span>
-      </div>
-    </a>
-  </aside>
-
-  <footer class="mt-auto py-4 border-t border-slate-900 text-center text-xs text-slate-600">
-    Pretty Ladies Vault &bull; Auto Curated Daily
-  </footer>
-
-  <script>
+<script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
@@ -186,31 +7,49 @@
     let observer = null;
     let cardsRenderedCount = 0;
 
-    // 🛡️ STRICT CLEAN PARSER (Removes \r, spaces, and parses exact Col D Post #)
+    // Bulletproof CSV line parser
     function parseCSV(text) {
-      const cleanText = text.replace(/\r/g, '').trim();
-      const lines = cleanText.split("\n");
+      const clean = text.replace(/\r/g, '').trim();
+      const lines = clean.split("\n");
       const result = [];
       
       for (let i = 1; i < lines.length; i++) {
-        const row = lines[i].split(",").map(item => item.replace(/^["']|["']$/g, '').trim());
+        // Robust regex comma split for sheets
+        const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim());
         const shortcode = row[0];
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
         
-        // Exact integer from Column D
-        const postNumFromColD = parseInt(row[3]);
+        // Column D se exact Post number
+        const colDVal = parseInt(row[3]);
 
         if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
           result.push({
             shortcode: shortcode,
             username: username && username.length > 0 ? username : "creator",
             status: status,
-            postIndex: (!isNaN(postNumFromColD) && postNumFromColD > 0) ? postNumFromColD : i
+            rawColD: !isNaN(colDVal) ? colDVal : null,
+            rowIndex: i
           });
         }
       }
-      return result;
+
+      // Base post mapping ensure karne ke liye
+      // Latest row ko sheet ka counter assign hoga
+      const total = result.length;
+      return result.map((item, idx) => {
+        // Agar Column D me number hai toh wahi, nahi toh latest se backward calculate karega
+        let postNum = item.rawColD;
+        if (!postNum) {
+          postNum = item.rowIndex; 
+        }
+        return {
+          shortcode: item.shortcode,
+          username: item.username,
+          status: item.status,
+          postIndex: postNum
+        };
+      });
     }
 
     function shuffleArray(array) {
@@ -233,26 +72,27 @@
       }
     }
 
-    // Helper: Safely reads ?id= parameter from ANY in-app browser or clean URL
-    function getQueryParam(name) {
-      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-      const results = regex.exec(window.location.href);
-      if (!results || !results[2]) return null;
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    function extractTargetId() {
+      const params = new URLSearchParams(window.location.search);
+      let target = params.get('id');
+      if (!target) {
+        const match = window.location.href.match(/[?&]id=([^&#]+)/);
+        if (match) target = match[1];
+      }
+      return target ? decodeURIComponent(target).trim() : null;
     }
 
     async function initVault() {
       try {
-        // Cache buster guarantees fresh sheet data
-        const freshCsvUrl = CSV_URL + "&cb=" + Date.now();
+        const freshCsvUrl = CSV_URL + "&_cb=" + Date.now();
         const res = await fetch(freshCsvUrl, { cache: "no-store" });
         const text = await res.text();
         db = parseCSV(text);
 
-        if (db.length === 0) throw new Error("No completed records found.");
+        if (db.length === 0) throw new Error("Empty records.");
 
-        const requestedId = getQueryParam('id');
-        loadActiveModel(requestedId, false);
+        const targetId = extractTargetId();
+        loadActiveModel(targetId, false);
         refreshGrid(8);
         setupIntersectionObserver();
       } catch (err) {
@@ -261,7 +101,10 @@
     }
 
     function loadActiveModel(query, triggerRefresh = true) {
+      if (!db || db.length === 0) return;
+
       if (!query) {
+        // Home page: Always show the absolute latest model
         currentModel = db[db.length - 1];
       } else {
         const cleanQuery = String(query).trim();
@@ -269,16 +112,17 @@
 
         let match = null;
 
-        // 1. Strict exact post number match
+        // 1. Direct Post Index match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // 2. Fallback shortcode match
+        // 2. Shortcode match
         if (!match) {
           match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
         }
 
+        // 3. Fallback to latest
         currentModel = match || db[db.length - 1];
       }
       
@@ -319,7 +163,6 @@
       document.getElementById('finalProfileLink').classList.add('hidden');
     }
 
-    // 💥 REVEAL + SMARTLINK AD
     document.getElementById('unlockBtn').addEventListener('click', () => {
       const btn = document.getElementById('unlockBtn');
       const timerBox = document.getElementById('timerContainer');
@@ -413,8 +256,8 @@
 
         card.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          const cleanBase = window.location.origin + window.location.pathname;
-          window.history.pushState({}, '', cleanBase + '?id=' + item.postIndex);
+          const newUrl = window.location.pathname + '?id=' + item.postIndex;
+          window.history.pushState({ id: item.postIndex }, '', newUrl);
           loadActiveModel(item.postIndex, true);
         });
 
@@ -429,33 +272,35 @@
 
     function setupIntersectionObserver() {
       const sentinel = document.getElementById('scrollSentinel');
-      
       observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            setTimeout(() => {
-              appendBatchToGrid(6);
-            }, 250);
+            setTimeout(() => { appendBatchToGrid(6); }, 250);
           }
         });
-      }, {
-        rootMargin: '250px'
-      });
-
+      }, { rootMargin: '250px' });
       observer.observe(sentinel);
+    }
+
+    window.addEventListener('popstate', () => {
+      const targetId = extractTargetId();
+      loadActiveModel(targetId, true);
+    });
+
+    function handleLogoClick() {
+      window.history.pushState({}, '', window.location.pathname);
+      loadActiveModel(null, true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     document.getElementById('searchForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const val = document.getElementById('searchInput').value.trim();
       if (val) {
-        const cleanBase = window.location.origin + window.location.pathname;
-        window.history.pushState({}, '', cleanBase + '?id=' + val);
+        window.history.pushState({ id: val }, '', window.location.pathname + '?id=' + val);
         loadActiveModel(val, true);
       }
     });
 
     window.addEventListener('DOMContentLoaded', initVault);
   </script>
-</body>
-</html>

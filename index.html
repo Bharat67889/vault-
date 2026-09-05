@@ -44,7 +44,7 @@
       </span>
     </div>
     <div class="text-[11px] font-bold text-pink-400 bg-pink-950/40 border border-pink-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-      Daily Sync
+      Live Auto Sync
     </div>
   </header>
 
@@ -54,7 +54,7 @@
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Enter Post # (e.g. 431)..." 
+        placeholder="Enter Post # (e.g. 1)..." 
         class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-9 pr-20 text-white placeholder-slate-500 focus:outline-none transition shadow-inner"
       >
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
@@ -172,7 +172,7 @@
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Dynamic cards -->
+        <!-- Injected stream cards -->
       </div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
@@ -203,23 +203,16 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ DUAL-CSV MAPPING ENGINE -->
+  <!-- ⚙️ DIRECT WEB-APP JSON ENGINE -->
   <script>
-    const QUEUE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
-    const TELE_USER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
+    // Playwright wala Apps Script URL jo direct fresh JSON dega
+    const API_URL = "https://script.google.com/macros/s/AKfycbzoGS8mMJDO_ghnUltSPIIQNhpFHn-y6zpamAATFjuMHTgTkV3ESnEtXQ7W_3D05JwJJw/exec";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
     window.currentModel = null;
     let observer = null;
     let cardsRenderedCount = 0;
-
-    function cleanLines(text) {
-      if (!text) return [];
-      return text.replace(/\r/g, '').trim().split("\n").map(line => 
-        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
-      );
-    }
 
     function extractTargetId() {
       const params = new URLSearchParams(window.location.search);
@@ -232,60 +225,28 @@
     }
 
     async function initVault() {
+      console.log("🚀 Initializing Live Vault Data...");
       try {
-        let teleMap = {};
-
-        // 1. Fetch tele user tab
-        try {
-          const tRes = await fetch(TELE_USER_CSV_URL);
-          if (tRes.ok) {
-            const tText = await tRes.text();
-            const tRows = cleanLines(tText);
-            for (let i = 1; i < tRows.length; i++) {
-              const pNo = parseInt(tRows[i][0]);
-              const uName = (tRows[i][1] || "").toLowerCase().trim();
-              if (!isNaN(pNo) && uName) {
-                teleMap[uName] = pNo;
-              }
-            }
-          }
-        } catch (te) {
-          console.warn("Tele User CSV fetch skipped", te);
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("API status: " + res.status);
+        
+        const json = await res.json();
+        if (json.status !== "success" || !json.data) {
+          throw new Error("Invalid response from Apps Script");
         }
 
-        // 2. Fetch Queue tab
-        const qRes = await fetch(QUEUE_CSV_URL);
-        if (!qRes.ok) throw new Error("HTTP " + qRes.status + " fetching Queue");
-        const qText = await qRes.text();
-        const qRows = cleanLines(qText);
+        db = json.data;
 
-        db = [];
-        for (let i = 1; i < qRows.length; i++) {
-          const row = qRows[i];
-          const shortcode = row[0];
-          const username = row[1] || "creator";
-          const status = (row[2] || "").trim().toUpperCase();
-
-          if (shortcode && shortcode.length > 3) {
-            const cleanUser = username.toLowerCase().trim();
-            const colD = parseInt(row[3]);
-
-            // Exact match priority: tele user > Column D > row index
-            let finalPost = teleMap[cleanUser];
-            if (!finalPost || isNaN(finalPost)) {
-              finalPost = (!isNaN(colD) && colD > 0) ? colD : i;
-            }
-
-            db.push({
-              shortcode: shortcode,
-              username: username,
-              status: status,
-              postIndex: finalPost
-            });
-          }
+        if (db.length === 0) {
+          document.getElementById('loader').innerHTML = `
+            <div class="p-6 text-center text-slate-400">
+              <i class="fa-solid fa-hourglass-start text-pink-500 text-3xl mb-3"></i>
+              <p class="text-sm font-bold">Vault Reset Complete!</p>
+              <p class="text-xs text-slate-500 mt-1">Ready for Post #1. Start your bot trigger.</p>
+            </div>
+          `;
+          return;
         }
-
-        if (db.length === 0) throw new Error("No data in Queue sheet");
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
@@ -296,7 +257,7 @@
         console.error("Vault Load Error:", err);
         document.getElementById('loader').innerHTML = `
           <div class="bg-slate-900 border border-pink-500/30 p-4 rounded-2xl text-center space-y-2">
-            <p class="text-pink-400 text-xs font-bold">Failed to load: ${err.message}</p>
+            <p class="text-pink-400 text-xs font-bold">Sync Error: ${err.message}</p>
             <button onclick="location.reload()" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg">
               Retry
             </button>
@@ -309,7 +270,7 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        // Highest post number = latest uploaded model
+        // Sabse latest post (Highest Post Number)
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
         window.currentModel = sorted[sorted.length - 1];
       } else {
@@ -318,14 +279,15 @@
 
         let match = null;
 
+        // Exact Post Number Match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
+        // Fallback: Username / Shortcode
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
-
         if (!match) {
           match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
         }

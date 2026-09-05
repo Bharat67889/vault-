@@ -161,7 +161,7 @@
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Dynamically injected stream cards -->
+        <!-- Injected stream cards -->
       </div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
@@ -192,101 +192,23 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ TELEGRAM USERNAME -> POST NUMBER MAPPER ENGINE -->
+  <!-- ⚙️ PRECISE TELE-USER MATCHING ENGINE -->
   <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    const QUEUE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    const TELE_USER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
-    const TELEGRAM_CHANNEL = "PRETTYLADIES4";
 
     let db = [];
     let currentModel = null;
     let observer = null;
     let cardsRenderedCount = 0;
-    let tgMap = {}; // { username_lowercase: postNumber }
 
-    // 1. Fetch Telegram Map: Username -> Real Telegram Post Number
-    async function fetchTelegramMapping() {
-      try {
-        const mirrorUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://t.me/s/' + TELEGRAM_CHANNEL)}`;
-        const res = await fetch(mirrorUrl);
-        const html = await res.text();
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const messages = doc.querySelectorAll('.tgme_widget_message_text');
-
-        messages.forEach(msg => {
-          const text = msg.innerText || "";
-          const postMatch = text.match(/Post\s*#?(\d+)/i);
-          const userMatch = text.match(/Instagram\s*ID:\s*([a-zA-Z0-9._]+)/i);
-
-          if (postMatch && userMatch) {
-            const pNum = parseInt(postMatch[1]);
-            const uName = userMatch[1].trim().toLowerCase();
-            tgMap[uName] = pNum;
-          }
-        });
-        console.log("✅ Telegram Post Map Ready:", tgMap);
-      } catch (e) {
-        console.warn("⚠️ Telegram fetch fallback:", e);
-      }
-    }
-
-    function parseCSV(text) {
-      const cleanText = text.replace(/\r/g, '').trim();
-      const lines = cleanText.split("\n");
-      const result = [];
-      
-      for (let i = 1; i < lines.length; i++) {
-        const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim());
-        const shortcode = row[0];
-        const username = row[1];
-        const status = (row[2] || "").toUpperCase();
-        const colDVal = parseInt(row[3]);
-
-        if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
-          result.push({
-            shortcode: shortcode,
-            username: username && username.length > 0 ? username : "creator",
-            status: status,
-            defaultIndex: (!isNaN(colDVal) && colDVal > 0) ? colDVal : i,
-            rowIndex: i
-          });
-        }
-      }
-
-      // 🎯 JUGAD SYNC: Username se Telegram Post Number assign karo!
-      return result.map((item) => {
-        const uClean = item.username.toLowerCase();
-        let exactPostNum = tgMap[uClean] || item.defaultIndex;
-
-        return {
-          shortcode: item.shortcode,
-          username: item.username,
-          status: item.status,
-          postIndex: exactPostNum
-        };
-      });
-    }
-
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function getThumbUrl(shortcode, size = 'l') {
-      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model`;
-    }
-
-    function handleThumbError(img) {
-      if (!img.dataset.failedOnce) {
-        img.dataset.failedOnce = "true";
-        img.src = `https://instagram.com/p/${currentModel.shortcode}/media/?size=l`;
-      }
+    function cleanSplitCSV(text) {
+      const clean = text.replace(/\r/g, '').trim();
+      const lines = clean.split("\n");
+      return lines.map(line => 
+        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^["']|["']$/g, '').trim())
+      );
     }
 
     function extractTargetId() {
@@ -301,14 +223,59 @@
 
     async function initVault() {
       try {
-        // Step 1: Telegram Map lo pehle
-        await fetchTelegramMapping();
+        const cacheBust = "&_cb=" + Date.now();
 
-        // Step 2: Fresh Sheet CSV fetch
-        const freshCsvUrl = CSV_URL + "&_t=" + Date.now();
-        const res = await fetch(freshCsvUrl, { cache: "no-store" });
-        const text = await res.text();
-        db = parseCSV(text);
+        // Parallel Fetch
+        const [resQueue, resTele] = await Promise.all([
+          fetch(QUEUE_CSV_URL + cacheBust, { cache: "no-store" }),
+          fetch(TELE_USER_CSV_URL + cacheBust, { cache: "no-store" })
+        ]);
+
+        const queueText = await resQueue.text();
+        const teleText = await resTele.text();
+
+        const queueRows = cleanSplitCSV(queueText);
+        const teleRows = cleanSplitCSV(teleText);
+
+        // 1. Build Dictionary: Username (lowercase) -> Post No
+        const teleMap = {};
+        for (let i = 1; i < teleRows.length; i++) {
+          const pNo = parseInt(teleRows[i][0]);
+          const uName = (teleRows[i][1] || "").toLowerCase().trim();
+          if (!isNaN(pNo) && uName) {
+            teleMap[uName] = pNo;
+          }
+        }
+
+        // 2. Build Models DB with priority mapping
+        db = [];
+        for (let i = 1; i < queueRows.length; i++) {
+          const row = queueRows[i];
+          const shortcode = row[0];
+          const username = row[1];
+          const status = (row[2] || "").toUpperCase();
+
+          if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
+            const cleanUser = (username || "").toLowerCase().trim();
+            
+            // Priority 1: Exact mapping from tele user tab
+            // Priority 2: Column D value (if any)
+            // Priority 3: Fallback Row Index
+            let finalPostNum = teleMap[cleanUser];
+            const colD = parseInt(row[3]);
+
+            if (!finalPostNum || isNaN(finalPostNum)) {
+              finalPostNum = (!isNaN(colD) && colD > 0) ? colD : i;
+            }
+
+            db.push({
+              shortcode: shortcode,
+              username: username && username.length > 0 ? username : "creator",
+              status: status,
+              postIndex: finalPostNum
+            });
+          }
+        }
 
         if (db.length === 0) throw new Error("Empty records.");
 
@@ -325,28 +292,26 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        currentModel = db[db.length - 1];
+        // Default home view: Highest mapped post number
+        const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
+        currentModel = sorted[sorted.length - 1];
       } else {
         const cleanQuery = String(query).trim();
         const numericId = parseInt(cleanQuery);
 
         let match = null;
 
-        // 1. Check mapped Telegram postIndex
+        // 1. Direct Post Index match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // 2. Check Username
+        // 2. Match by exact username
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
 
-        // 3. Check Shortcode
-        if (!match) {
-          match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
-        }
-
+        // 3. Fallback
         currentModel = match || db[db.length - 1];
       }
       
@@ -373,10 +338,7 @@
       thumb.dataset.failedOnce = "";
       thumb.src = getThumbUrl(currentModel.shortcode, 'l');
 
-      thumb.onload = () => {
-        cardSpinner.classList.add('hidden');
-      };
-
+      thumb.onload = () => { cardSpinner.classList.add('hidden'); };
       setTimeout(() => { cardSpinner.classList.add('hidden'); }, 1200);
 
       loader.classList.add('hidden');
@@ -387,7 +349,26 @@
       document.getElementById('finalProfileLink').classList.add('hidden');
     }
 
-    // 💥 REVEAL + SMARTLINK AD
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getThumbUrl(shortcode, size = 'l') {
+      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model`;
+    }
+
+    function handleThumbError(img) {
+      if (!img.dataset.failedOnce) {
+        img.dataset.failedOnce = "true";
+        img.src = `https://instagram.com/p/${currentModel.shortcode}/media/?size=l`;
+      }
+    }
+
     document.getElementById('unlockBtn').addEventListener('click', () => {
       const btn = document.getElementById('unlockBtn');
       const timerBox = document.getElementById('timerContainer');

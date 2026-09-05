@@ -21,6 +21,17 @@
     .pulse-btn { animation: pulseGlow 2s infinite; }
     .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px); }
   </style>
+
+  <script>
+    function handleThumbError(img) {
+      if (!img.dataset.failedOnce && window.currentModel) {
+        img.dataset.failedOnce = "true";
+        img.src = "https://instagram.com/p/" + window.currentModel.shortcode + "/media/?size=l";
+      } else {
+        img.src = "https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model";
+      }
+    }
+  </script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-20">
 
@@ -66,7 +77,7 @@
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
       
-      <!-- 💫 CARD TRANSITION SPINNER -->
+      <!-- Spinner -->
       <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Model...</span>
@@ -161,7 +172,7 @@
       </div>
 
       <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Injected stream cards -->
+        <!-- Cards -->
       </div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
@@ -192,18 +203,18 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ UNCRASHABLE ENGINE SCRIPT -->
+  <!-- ⚙️ BULLETPROOF DUAL-FETCH ENGINE -->
   <script>
-    // Primary Main Queue Sheet
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
+    // New Primary Link provided by user
+    const PRIMARY_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?output=csv";
     
-    // Tele User Map Tab
-    const TELE_USER_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
-    
+    // Tele User Tab Verified Link (Post No & Username)
+    const TELE_USER_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=1266746265&single=true&output=csv";
+
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
-    let currentModel = null;
+    window.currentModel = null;
     let observer = null;
     let cardsRenderedCount = 0;
 
@@ -225,43 +236,44 @@
     }
 
     async function initVault() {
+      console.log("🚀 Initializing Vault...");
       try {
-        // Step 1: Safe Fetch Tele User Map
-        const teleMap = {};
+        let teleMap = {};
+
+        // 1. Read Tele User Tab
         try {
-          const tRes = await fetch(TELE_USER_URL + "&cb=" + Date.now());
+          const tRes = await fetch(TELE_USER_CSV);
           if (tRes.ok) {
             const tText = await tRes.text();
             const tRows = cleanLines(tText);
             for (let i = 1; i < tRows.length; i++) {
               const pNo = parseInt(tRows[i][0]);
               const uName = (tRows[i][1] || "").toLowerCase().trim();
-              if (!isNaN(pNo) && uName) {
-                teleMap[uName] = pNo;
-              }
+              if (!isNaN(pNo) && uName) teleMap[uName] = pNo;
             }
+            console.log("✅ Tele Map Parsed:", Object.keys(teleMap).length, "users");
           }
-        } catch (te) {
-          console.warn("Tele User map fetch skipped, using queue fallback");
+        } catch(e) {
+          console.warn("Tele User CSV fetch skipped", e);
         }
 
-        // Step 2: Main Queue Fetch
-        const qRes = await fetch(CSV_URL + "&cb=" + Date.now());
-        const qText = await qRes.text();
-        const qRows = cleanLines(qText);
+        // 2. Read Primary CSV
+        const pRes = await fetch(PRIMARY_CSV);
+        if (!pRes.ok) throw new Error("HTTP Status " + pRes.status);
+        const pText = await pRes.text();
+        const pRows = cleanLines(pText);
 
         db = [];
-        for (let i = 1; i < qRows.length; i++) {
-          const row = qRows[i];
+        for (let i = 1; i < pRows.length; i++) {
+          const row = pRows[i];
           const shortcode = row[0];
           const username = row[1] || "creator";
-          const status = (row[2] || "").trim().toUpperCase();
 
           if (shortcode && shortcode.length > 3) {
             const cleanUser = username.toLowerCase().trim();
             const colD = parseInt(row[3]);
 
-            // Exact sync from tele user -> Column D -> Row Index
+            // Exact match: teleMap > Column D > Index
             let finalPost = teleMap[cleanUser];
             if (!finalPost || isNaN(finalPost)) {
               finalPost = (!isNaN(colD) && colD > 0) ? colD : i;
@@ -270,13 +282,17 @@
             db.push({
               shortcode: shortcode,
               username: username,
-              status: status,
+              status: "COMPLETED",
               postIndex: finalPost
             });
           }
         }
 
-        if (db.length === 0) throw new Error("Empty DB");
+        if (db.length === 0) {
+          throw new Error("No entries found in sheet.");
+        }
+
+        console.log("🎉 Vault Models Ready:", db.length);
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
@@ -284,10 +300,15 @@
         setupIntersectionObserver();
 
       } catch (err) {
-        console.error("Critical Load Error:", err);
-        // Fallback: Show loader error only if queue sheet actually failed
-        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Connecting to Vault...</p>`;
-        setTimeout(initVault, 2500); // Auto-retry
+        console.error("Vault Load Error:", err);
+        document.getElementById('loader').innerHTML = `
+          <div class="bg-slate-900 border border-pink-500/30 p-4 rounded-2xl text-center space-y-2">
+            <p class="text-pink-400 text-xs font-bold">Failed to load: ${err.message}</p>
+            <button onclick="location.reload()" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg">
+              Retry
+            </button>
+          </div>
+        `;
       }
     }
 
@@ -295,31 +316,27 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        // Highest post number = latest uploaded model
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
-        currentModel = sorted[sorted.length - 1];
+        window.currentModel = sorted[sorted.length - 1];
       } else {
         const cleanQuery = String(query).trim();
         const numericId = parseInt(cleanQuery);
 
         let match = null;
 
-        // 1. Direct exact Post Index match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // 2. Fallback Username match
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
 
-        // 3. Fallback Shortcode match
         if (!match) {
           match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
         }
 
-        currentModel = match || db[db.length - 1];
+        window.currentModel = match || db[db.length - 1];
       }
       
       renderHero();
@@ -339,11 +356,11 @@
 
       cardSpinner.classList.remove('hidden');
 
-      label.innerText = currentModel.postIndex;
+      label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
       
       thumb.dataset.failedOnce = "";
-      thumb.src = getThumbUrl(currentModel.shortcode, 'l');
+      thumb.src = getThumbUrl(window.currentModel.shortcode, 'l');
 
       thumb.onload = () => { cardSpinner.classList.add('hidden'); };
       setTimeout(() => { cardSpinner.classList.add('hidden'); }, 1200);
@@ -367,13 +384,6 @@
 
     function getThumbUrl(shortcode, size = 'l') {
       return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model`;
-    }
-
-    function handleThumbError(img) {
-      if (!img.dataset.failedOnce) {
-        img.dataset.failedOnce = "true";
-        img.src = `https://instagram.com/p/${currentModel.shortcode}/media/?size=l`;
-      }
     }
 
     document.getElementById('unlockBtn').addEventListener('click', () => {
@@ -407,9 +417,9 @@
           clearInterval(interval);
           timerBox.classList.add('hidden');
           
-          blurredHandle.innerText = "@" + currentModel.username;
-          finalLink.href = `https://www.instagram.com/${currentModel.username}/`;
-          unlockedText.innerText = `VISIT @${currentModel.username}`;
+          blurredHandle.innerText = "@" + window.currentModel.username;
+          finalLink.href = `https://www.instagram.com/${window.currentModel.username}/`;
+          unlockedText.innerText = `VISIT @${window.currentModel.username}`;
           finalLink.classList.remove('hidden');
         }
       }, 1000);
@@ -454,7 +464,7 @@
               src="${getThumbUrl(item.shortcode, 'm')}" 
               class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
               loading="lazy"
-              onerror="this.src='https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model'"
+              onerror="handleThumbError(this)"
             >
             <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-pink-500/30 flex items-baseline gap-1 shadow-md">
               <span class="text-[9px] font-bold text-slate-400 uppercase">POST NO.</span>

@@ -56,19 +56,18 @@
     </div>
   </div>
 
-  <!-- 🎯 MAIN HERO: TARGET REEL UNLOCK SECTION -->
+  <!-- 🎯 MAIN HERO: TARGET CREATOR PROFILE UNLOCK -->
   <main class="max-w-md mx-auto w-full px-4 py-4 flex-grow">
     <div id="loader" class="text-center py-16">
       <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
-      <p class="text-sm text-slate-400 font-medium">Loading verified creator video...</p>
+      <p class="text-sm text-slate-400 font-medium">Syncing verified creator card...</p>
     </div>
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
       
-      <!-- Video / Media Container -->
+      <!-- HD Photo Card Container -->
       <div class="relative aspect-[9/13] bg-black overflow-hidden flex items-center justify-center">
         
-        <!-- Crystal Clear HD Photo Preview -->
         <img 
           id="modelThumbnail" 
           src="" 
@@ -77,31 +76,14 @@
           onerror="handleThumbError(this)"
         >
 
-        <!-- Direct Shortcode-Synced Video Player -->
-        <iframe 
-          id="nativePlayerFrame" 
-          src="" 
-          class="hidden w-full h-full border-0 bg-black" 
-          referrerpolicy="no-referrer-when-downgrade"
-          allow="autoplay; encrypted-media; fullscreen"
-          allowfullscreen>
-        </iframe>
+        <!-- Subtle Top & Bottom Gradient Overlay for readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
 
         <!-- 📌 POST NO (Small) + NUMBER (Large & Bold) -->
         <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
           <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 tracking-tight leading-none">---</span>
         </div>
-
-        <!-- 🎬 WATCH REEL BUTTON (Bottom-Left) -->
-        <button 
-          id="playReelBtn" 
-          onclick="togglePlayReel()"
-          class="absolute bottom-20 left-4 z-20 bg-slate-900/90 hover:bg-pink-600 backdrop-blur-md border border-slate-700 hover:border-pink-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-lg transition duration-200"
-        >
-          <i id="playBtnIcon" class="fa-solid fa-play text-pink-400 text-xs"></i>
-          <span id="playBtnText">Watch Reel Preview</span>
-        </button>
 
         <!-- Masked Handle Banner -->
         <div id="handleBanner" class="absolute bottom-3 inset-x-3 text-center z-10 pointer-events-none">
@@ -156,11 +138,14 @@
         <h2 class="text-sm font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
           <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
         </h2>
-        <span class="text-[11px] text-slate-500 font-bold">100% Synced</span>
+        <span class="text-[11px] text-slate-500 font-bold">All Locked 🔒</span>
       </div>
 
-      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5"></div>
+      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
+        <!-- Dynamically injected stream -->
+      </div>
 
+      <!-- ⏳ Infinite Scroll Sentinel -->
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
       </div>
@@ -173,14 +158,14 @@
 
   <!-- ⚙️ ENGINE JAVASCRIPT LOGIC -->
   <script>
+    // Direct CSV endpoint for Queue tab (gid=805147059)
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPRJK4L_CRzANOtau2Om8jm9gr_jXUH-NPxOqwmbmCTocaXkKkUoXxiStEw3GWJ_MpwpoNjFxBGGao/pub?gid=805147059&single=true&output=csv";
 
     let db = [];
     let currentModel = null;
-    let isPlaying = false;
     let observer = null;
 
-    // Strict Filter: Only COMPLETED rows
+    // 🛡️ STRICT FILTER: Only COMPLETED rows are allowed
     function parseCSV(text) {
       const lines = text.trim().split("\n");
       const result = [];
@@ -191,7 +176,8 @@
         const username = row[1];
         const status = (row[2] || "").toUpperCase();
 
-        if (shortcode && shortcode.length > 3 && (status === "COMPLETED" || status === "DONE")) {
+        // Strictly COMPLETED check
+        if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
           result.push({
             shortcode: shortcode,
             username: username && username.length > 0 ? username : "creator",
@@ -213,7 +199,7 @@
     }
 
     function getThumbUrl(shortcode, size = 'l') {
-      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Model+Media`;
+      return `https://images.weserv.nl/?url=https://www.instagram.com/p/${shortcode}/media/?size=${size}&output=jpg&default=https://placehold.co/400x600/0f172a/ec4899?text=Creator+Media`;
     }
 
     function handleThumbError(img) {
@@ -229,7 +215,7 @@
         const text = await res.text();
         db = parseCSV(text);
 
-        if (db.length === 0) throw new Error("No verified records found.");
+        if (db.length === 0) throw new Error("No completed records found.");
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedId = urlParams.get('id');
@@ -238,7 +224,7 @@
         appendBatchToGrid(8);
         setupIntersectionObserver();
       } catch (err) {
-        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load verified vault records.</p>`;
+        document.getElementById('loader').innerHTML = `<p class="text-pink-500 text-xs font-bold">Failed to load vault records.</p>`;
       }
     }
 
@@ -262,16 +248,6 @@
       const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
-      const playerFrame = document.getElementById('nativePlayerFrame');
-      const playBtnText = document.getElementById('playBtnText');
-      const playBtnIcon = document.getElementById('playBtnIcon');
-
-      isPlaying = false;
-      playerFrame.src = "";
-      playerFrame.classList.add('hidden');
-      thumb.classList.remove('hidden');
-      playBtnText.innerText = "Watch Reel Preview";
-      playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
 
       label.innerText = currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
@@ -287,32 +263,7 @@
       document.getElementById('finalProfileLink').classList.add('hidden');
     }
 
-    function togglePlayReel() {
-      const playerFrame = document.getElementById('nativePlayerFrame');
-      const thumb = document.getElementById('modelThumbnail');
-      const playBtnText = document.getElementById('playBtnText');
-      const playBtnIcon = document.getElementById('playBtnIcon');
-
-      if (!isPlaying) {
-        // Direct Shortcode Play URL: 100% matched to thumbnail
-        // Using clean captioned embed with dynamic cachebuster to bypass repeat blocks
-        playerFrame.src = `https://www.instagram.com/reel/${currentModel.shortcode}/embed/captioned/?cr=1&v=14&wp=540&rd=${encodeURIComponent(window.location.origin)}&rp=${encodeURIComponent(window.location.pathname)}`;
-        
-        playerFrame.classList.remove('hidden');
-        thumb.classList.add('hidden');
-        playBtnText.innerText = "Show Photo";
-        playBtnIcon.className = "fa-solid fa-image text-pink-400 text-xs";
-        isPlaying = true;
-      } else {
-        playerFrame.src = "";
-        playerFrame.classList.add('hidden');
-        thumb.classList.remove('hidden');
-        playBtnText.innerText = "Watch Reel Preview";
-        playBtnIcon.className = "fa-solid fa-play text-pink-400 text-xs";
-        isPlaying = false;
-      }
-    }
-
+    // Reveal Logic
     document.getElementById('unlockBtn').addEventListener('click', () => {
       const btn = document.getElementById('unlockBtn');
       const timerBox = document.getElementById('timerContainer');
@@ -346,6 +297,7 @@
       }, 1000);
     });
 
+    // Random Endless Feed
     function appendBatchToGrid(count = 6) {
       const grid = document.getElementById('exploreGrid');
       const randomized = shuffleArray(db).slice(0, count);

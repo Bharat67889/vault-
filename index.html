@@ -203,16 +203,21 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ DIRECT WEB-APP JSON ENGINE -->
+  <!-- ⚙️ DIRECT GVIZ PARSER ENGINE -->
   <script>
-    // Playwright wala Apps Script URL jo direct fresh JSON dega
-    const API_URL = "https://script.google.com/macros/s/AKfycbzoGS8mMJDO_ghnUltSPIIQNhpFHn-y6zpamAATFjuMHTgTkV3ESnEtXQ7W_3D05JwJJw/exec";
+    // Playwright wala exact gviz/tq endpoint for Queue tab
+    const SHEET_GVIZ_URL = "https://docs.google.com/spreadsheets/d/1MrwItyy6IPNLSJbz1b53TGOTS2JBLTyg46Ql9xZpI6w/gviz/tq?tqx=out:csv&sheet=Queue";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
     let db = [];
     window.currentModel = null;
     let observer = null;
     let cardsRenderedCount = 0;
+
+    function parseCSVLine(line) {
+      const row = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+      return row.map(v => v.replace(/^"|"$/g, "").trim());
+    }
 
     function extractTargetId() {
       const params = new URLSearchParams(window.location.search);
@@ -225,28 +230,52 @@
     }
 
     async function initVault() {
-      console.log("🚀 Initializing Live Vault Data...");
+      console.log("🚀 Fetching live Queue sheet via GViz...");
       try {
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error("API status: " + res.status);
-        
-        const json = await res.json();
-        if (json.status !== "success" || !json.data) {
-          throw new Error("Invalid response from Apps Script");
+        const res = await fetch(SHEET_GVIZ_URL + "&t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const text = await res.text();
+        const lines = text.trim().split("\n");
+
+        db = [];
+        let postCounter = 1;
+
+        for (let i = 1; i < lines.length; i++) {
+          const row = parseCSVLine(lines[i]);
+          const shortcode = row[0] || "";
+          const username = row[1] || "creator";
+          const status = (row[2] || "").toUpperCase();
+          const colD = parseInt(row[3]);
+
+          // Sirf COMPLETED rows hi vault par dikhayenge
+          if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
+            const finalPost = (!isNaN(colD) && colD > 0) ? colD : postCounter;
+
+            db.push({
+              shortcode: shortcode,
+              username: username,
+              status: status,
+              postIndex: finalPost
+            });
+
+            postCounter++;
+          }
         }
 
-        db = json.data;
-
+        // Fresh Reset: Jab sabhi rows PENDING ho chuki hain
         if (db.length === 0) {
           document.getElementById('loader').innerHTML = `
-            <div class="p-6 text-center text-slate-400">
-              <i class="fa-solid fa-hourglass-start text-pink-500 text-3xl mb-3"></i>
-              <p class="text-sm font-bold">Vault Reset Complete!</p>
-              <p class="text-xs text-slate-500 mt-1">Ready for Post #1. Start your bot trigger.</p>
+            <div class="bg-slate-900 border border-pink-500/30 p-6 rounded-3xl text-center space-y-2 max-w-sm mx-auto shadow-xl">
+              <i class="fa-solid fa-hourglass-start text-pink-500 text-3xl mb-2"></i>
+              <p class="text-sm font-extrabold text-slate-200">Vault Reset Complete</p>
+              <p class="text-xs text-slate-400 leading-relaxed">Ready for Post #1. Jaise hi bot pehla post COMPLETED karega, creator yahan live aa jayegi.</p>
             </div>
           `;
           return;
         }
+
+        console.log("✅ COMPLETED models synced:", db.length);
 
         const targetId = extractTargetId();
         loadActiveModel(targetId, false);
@@ -256,10 +285,10 @@
       } catch (err) {
         console.error("Vault Load Error:", err);
         document.getElementById('loader').innerHTML = `
-          <div class="bg-slate-900 border border-pink-500/30 p-4 rounded-2xl text-center space-y-2">
+          <div class="bg-slate-900 border border-pink-500/30 p-4 rounded-2xl text-center space-y-2 max-w-sm mx-auto shadow-xl">
             <p class="text-pink-400 text-xs font-bold">Sync Error: ${err.message}</p>
-            <button onclick="location.reload()" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg">
-              Retry
+            <button onclick="location.reload()" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg mt-1 transition active:scale-95">
+              Retry Sync
             </button>
           </div>
         `;
@@ -270,7 +299,6 @@
       if (!db || db.length === 0) return;
 
       if (!query) {
-        // Sabse latest post (Highest Post Number)
         const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
         window.currentModel = sorted[sorted.length - 1];
       } else {
@@ -279,15 +307,14 @@
 
         let match = null;
 
-        // Exact Post Number Match
         if (!isNaN(numericId) && numericId > 0) {
           match = db.find(m => m.postIndex === numericId);
         }
 
-        // Fallback: Username / Shortcode
         if (!match) {
           match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
         }
+
         if (!match) {
           match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
         }

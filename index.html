@@ -28,9 +28,23 @@
       50% { box-shadow: 0 0 28px rgba(236, 72, 153, 0.85); }
     }
     .pulse-btn { animation: pulseGlow 2s infinite; }
-    .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px); }
+    .glass-nav { background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(14px); }
     
-    /* 🎬 Telegram Video Crop Wrapper - Strictly hide caption and ID text */
+    /* 🚀 Continuous Smooth Ticker Animation */
+    @keyframes marqueeMove {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .marquee-track {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marqueeMove 18s linear infinite;
+    }
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* 🎬 Telegram Video Edge-to-Edge Frame (Hides Logo, Padding & Caption) */
     .tg-crop-container {
       position: relative;
       width: 100%;
@@ -42,10 +56,10 @@
 
     .tg-crop-container iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 680px !important; /* Forces caption text below the container viewport */
+      top: -12px;
+      left: -4%;
+      width: 108% !important; /* Zooms slightly to push Telegram icon & side gaps outside visible area */
+      height: 690px !important; /* Pushes bottom text & description completely outside */
       border: none !important;
     }
   </style>
@@ -63,17 +77,33 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-20">
 
-  <!-- 🧭 HEADER -->
-  <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 px-4 py-3 flex items-center justify-between shadow-lg">
-    <div class="flex items-center gap-2 cursor-pointer" onclick="handleLogoClick()">
-      <span class="text-xl">🔥</span>
-      <span class="font-black text-base tracking-wide bg-gradient-to-r from-pink-500 via-rose-400 to-purple-400 bg-clip-text text-transparent">
-        PRETTY LADIES VAULT
-      </span>
-    </div>
-    <div class="text-[11px] font-bold text-pink-400 bg-pink-950/40 border border-pink-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-      Live Auto Sync
-    </div>
+  <!-- 🧭 HEADER WITH CONTINUOUS RUNNING BANNER -->
+  <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 shadow-lg overflow-hidden">
+    <a 
+      href="https://t.me/prettyladies4" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="block py-2.5 px-2 bg-gradient-to-r from-pink-950/40 via-purple-950/40 to-sky-950/40 border-b border-pink-500/20 text-xs font-bold text-pink-200"
+    >
+      <div class="overflow-hidden whitespace-nowrap w-full flex items-center">
+        <div class="marquee-track flex items-center gap-6">
+          <span class="flex items-center gap-2 tracking-wide">
+            <span class="text-pink-400">🔥</span> 
+            <span>Want 100% Ad-Free Clips & Daily Uncut Updates?</span> 
+            <span class="text-sky-400 font-extrabold underline decoration-sky-400 underline-offset-2">Join Our Official Telegram Channel Now 👉 Click Here</span> 
+            <span class="text-xs bg-sky-500/30 text-sky-300 border border-sky-400/40 px-2 py-0.5 rounded-full font-black ml-1">FREE VIP</span>
+          </span>
+          <span class="flex items-center gap-2 tracking-wide text-slate-400 font-medium">
+            <span>&bull;</span>
+            <span>Fast Streaming</span>
+            <span>&bull;</span>
+            <span>Zero Popups</span>
+            <span>&bull;</span>
+            <span>Instant Model Handles</span>
+          </span>
+        </div>
+      </div>
+    </a>
   </header>
 
   <!-- 🔍 SEARCH BAR -->
@@ -111,10 +141,10 @@
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Playable Video Frame Container -->
-      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2.5">
+      <!-- Playable Video Frame Container (Edge-To-Edge) -->
+      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-0">
         
-        <!-- 🎥 Capped Telegram Video Player -->
+        <!-- 🎥 Capped & Cropped Telegram Video Player -->
         <div id="telegramEmbedContainer" class="w-full"></div>
 
         <!-- 📌 POST NO BADGE -->
@@ -124,8 +154,8 @@
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full px-1 mt-2.5 text-center z-20">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
+        <div id="handleBanner" class="w-full px-4 py-2 text-center z-20">
+          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
           </div>
@@ -268,14 +298,11 @@
           const username = row[1] || "creator";
           const status = (row[2] || "").toUpperCase();
           const colD = parseInt(row[3]);
-          const colE_tgId = parseInt(row[4]); // 👈 Column E: Telegram Message ID
+          const colE_tgId = parseInt(row[4]);
 
           if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
             const finalPost = (!isNaN(colD) && colD > 0) ? colD : postCounter;
             
-            // Handshake logic:
-            // 1. Agar Sheet me Col E populated hai toh wahi use hoga
-            // 2. Pichle records me: Post 14 tak formula 532 + finalPost, Post 16+ ke liye skip-offset handle
             let calculatedTgId;
             if (!isNaN(colE_tgId) && colE_tgId > 0) {
               calculatedTgId = colE_tgId;
@@ -373,9 +400,8 @@
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
 
-      // 🎬 Pure Video Embed: Caption/text ko viewport ke niche clip kar diya gaya hai
       embedContainer.innerHTML = `
-        <div class="tg-crop-container shadow-2xl border border-slate-800">
+        <div class="tg-crop-container shadow-2xl">
           <iframe 
             src="https://t.me/prettyladies4/${window.currentModel.tgMessageId}?embed=1" 
             scrolling="no" 
@@ -531,12 +557,6 @@
       const targetId = extractTargetId();
       loadActiveModel(targetId, true);
     });
-
-    function handleLogoClick() {
-      window.history.pushState({}, '', window.location.pathname);
-      loadActiveModel(null, true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
     document.getElementById('searchForm').addEventListener('submit', (e) => {
       e.preventDefault();

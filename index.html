@@ -30,11 +30,23 @@
     .pulse-btn { animation: pulseGlow 2s infinite; }
     .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px); }
     
-    /* Responsive Telegram Frame Styling */
-    #telegramEmbedContainer iframe {
-      border-radius: 1rem !important;
-      max-width: 100% !important;
-      margin: 0 auto !important;
+    /* 🎬 Telegram Video Crop Wrapper - Strictly hide caption and ID text */
+    .tg-crop-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      border-radius: 1.25rem;
+      background-color: #000;
+    }
+
+    .tg-crop-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 680px !important; /* Forces caption text below the container viewport */
+      border: none !important;
     }
   </style>
 
@@ -99,21 +111,21 @@
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Vertical Playable Reel Frame -->
-      <div class="relative min-h-[460px] w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2">
+      <!-- Playable Video Frame Container -->
+      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2.5">
         
-        <!-- 🎥 Playable Telegram Video Stream -->
-        <div id="telegramEmbedContainer" class="w-full flex items-center justify-center min-h-[400px]"></div>
+        <!-- 🎥 Capped Telegram Video Player -->
+        <div id="telegramEmbedContainer" class="w-full"></div>
 
         <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+        <div class="absolute top-4 left-4 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full px-2 mt-2 text-center z-20">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2 px-4 rounded-2xl shadow-xl">
+        <div id="handleBanner" class="w-full px-1 mt-2.5 text-center z-20">
+          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
           </div>
@@ -258,19 +270,25 @@
           const colD = parseInt(row[3]);
           const colE_tgId = parseInt(row[4]); // 👈 Column E: Telegram Message ID
 
-          // Sirf COMPLETED rows hi vault par dikhayenge
           if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
             const finalPost = (!isNaN(colD) && colD > 0) ? colD : postCounter;
             
-            // Post 1 = 533 baseline formula if Column E is yet to be populated
-            const finalTgId = (!isNaN(colE_tgId) && colE_tgId > 0) ? colE_tgId : (532 + finalPost);
+            // Handshake logic:
+            // 1. Agar Sheet me Col E populated hai toh wahi use hoga
+            // 2. Pichle records me: Post 14 tak formula 532 + finalPost, Post 16+ ke liye skip-offset handle
+            let calculatedTgId;
+            if (!isNaN(colE_tgId) && colE_tgId > 0) {
+              calculatedTgId = colE_tgId;
+            } else {
+              calculatedTgId = (finalPost <= 14) ? (532 + finalPost) : (531 + finalPost);
+            }
 
             db.push({
               shortcode: shortcode,
               username: username,
               status: status,
               postIndex: finalPost,
-              tgMessageId: finalTgId
+              tgMessageId: calculatedTgId
             });
 
             postCounter++;
@@ -355,19 +373,19 @@
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
 
-      // 🎬 Inject Dynamic Telegram Stream Embed
-      embedContainer.innerHTML = "";
-      const tgScript = document.createElement("script");
-      tgScript.async = true;
-      tgScript.src = "https://telegram.org/js/telegram-widget.js?22";
-      tgScript.setAttribute("data-telegram-post", `prettyladies4/${window.currentModel.tgMessageId}`);
-      tgScript.setAttribute("data-width", "100%");
-      tgScript.setAttribute("data-userpic", "false");
-      tgScript.setAttribute("data-color", "E11D48");
-      tgScript.setAttribute("data-dark", "1");
-      embedContainer.appendChild(tgScript);
+      // 🎬 Pure Video Embed: Caption/text ko viewport ke niche clip kar diya gaya hai
+      embedContainer.innerHTML = `
+        <div class="tg-crop-container shadow-2xl border border-slate-800">
+          <iframe 
+            src="https://t.me/prettyladies4/${window.currentModel.tgMessageId}?embed=1" 
+            scrolling="no" 
+            frameborder="0" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
 
-      setTimeout(() => { cardSpinner.classList.add('hidden'); }, 700);
+      setTimeout(() => { cardSpinner.classList.add('hidden'); }, 600);
 
       loader.classList.add('hidden');
       card.classList.remove('hidden');

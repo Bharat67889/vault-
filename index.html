@@ -44,23 +44,25 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Pure Video Viewport (Screenshot 2 Exact Match) */
+    /* 🎬 Tight Capped Video Viewport (Strips left blur completely) */
     .tg-video-viewport {
       position: relative;
       width: 100%;
+      max-width: 340px;
       height: 490px;
+      margin: 0 auto;
       overflow: hidden;
       border-radius: 1.5rem;
       background-color: #000;
     }
 
-    /* Zoom & Precision Offset: Strips side blur bars, top header & bottom text completely */
+    /* Shifted further left (-19%) & zoomed (138%) to eliminate left-side blur */
     .tg-video-viewport iframe {
       position: absolute;
       top: -65px !important;
-      left: -15% !important;
-      width: 130% !important;
-      height: 760px !important;
+      left: -19% !important;
+      width: 138% !important;
+      height: 770px !important;
       border: none !important;
     }
   </style>
@@ -169,7 +171,7 @@
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Playable Video Frame Container (Full Width Edge-To-Edge) -->
+      <!-- Playable Video Frame Container -->
       <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2.5">
         
         <!-- 🎥 Pure Video Embed Viewport -->
@@ -182,7 +184,7 @@
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full px-2 mt-2.5 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[340px] px-2 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
@@ -333,7 +335,6 @@
             if (!isNaN(colE_tgId) && colE_tgId > 0) {
               calculatedTgId = colE_tgId;
             } else {
-              // Post 14 tak: 532 + post. Post 16+ ke missing shift ke liye adjust
               calculatedTgId = (finalPost <= 14) ? (532 + finalPost) : (531 + finalPost);
             }
 
@@ -427,7 +428,6 @@
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
 
-      // 🎬 Renders Screenshot 2 matched pure video view
       embedContainer.innerHTML = `
         <div class="tg-video-viewport shadow-2xl border border-slate-800">
           <iframe 

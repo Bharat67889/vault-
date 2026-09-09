@@ -44,30 +44,28 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Tight 9:16 Video Frame (No side padding, no header, no captions) */
-    .tg-crop-container {
+    /* 🎬 Pure Video Viewport (Screenshot 2 Exact Match) */
+    .tg-video-viewport {
       position: relative;
-      width: 280px;
-      max-width: 100%;
-      height: 480px;
-      margin: 0 auto;
+      width: 100%;
+      height: 490px;
       overflow: hidden;
-      border-radius: 1.25rem;
+      border-radius: 1.5rem;
       background-color: #000;
     }
 
-    .tg-crop-container iframe {
+    /* Zoom & Precision Offset: Strips side blur bars, top header & bottom text completely */
+    .tg-video-viewport iframe {
       position: absolute;
-      top: -46px !important;
-      left: -14px !important;
-      width: calc(100% + 28px) !important;
-      height: 720px !important;
+      top: -65px !important;
+      left: -15% !important;
+      width: 130% !important;
+      height: 760px !important;
       border: none !important;
     }
   </style>
 
   <script>
-    // 📲 Deep Link: Force opens the native Telegram App on iOS/Android
     function openTelegramApp(e) {
       if (e) e.preventDefault();
       window.location.href = "tg://resolve?domain=prettyladies4";
@@ -88,7 +86,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-20">
 
-  <!-- 🧭 HEADER WITH DIRECT DEEP-LINK RUNNING BANNER -->
+  <!-- 🧭 HEADER WITH SEAMLESS RUNNING TICKER -->
   <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 shadow-lg overflow-hidden">
     <div 
       onclick="openTelegramApp(event)" 
@@ -114,7 +112,7 @@
             </span>
           </div>
 
-          <!-- Item Set 2 (Never-Empty Loop) -->
+          <!-- Item Set 2 (Continuous Loop) -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
@@ -165,16 +163,16 @@
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
       
-      <!-- 💫 TRANSITION SPINNER -->
+      <!-- 💫 CARD TRANSITION SPINNER -->
       <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Playable Video Frame Container -->
-      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2">
+      <!-- Playable Video Frame Container (Full Width Edge-To-Edge) -->
+      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2.5">
         
-        <!-- 🎥 Capped & Cropped Video Frame -->
+        <!-- 🎥 Pure Video Embed Viewport -->
         <div id="telegramEmbedContainer" class="w-full flex justify-center items-center"></div>
 
         <!-- 📌 POST NO BADGE -->
@@ -184,7 +182,7 @@
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[290px] px-2 mt-3 text-center z-20">
+        <div id="handleBanner" class="w-full px-2 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
@@ -335,6 +333,7 @@
             if (!isNaN(colE_tgId) && colE_tgId > 0) {
               calculatedTgId = colE_tgId;
             } else {
+              // Post 14 tak: 532 + post. Post 16+ ke missing shift ke liye adjust
               calculatedTgId = (finalPost <= 14) ? (532 + finalPost) : (531 + finalPost);
             }
 
@@ -428,8 +427,9 @@
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
 
+      // 🎬 Renders Screenshot 2 matched pure video view
       embedContainer.innerHTML = `
-        <div class="tg-crop-container shadow-2xl border border-slate-800">
+        <div class="tg-video-viewport shadow-2xl border border-slate-800">
           <iframe 
             src="https://t.me/prettyladies4/${window.currentModel.tgMessageId}?embed=1" 
             scrolling="no" 

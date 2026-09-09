@@ -44,25 +44,25 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Tight Capped Video Viewport (Strips left blur completely) */
+    /* 🎬 Narrow 8:16 Viewport (Cuts Left Blur & Side Bars 100%) */
     .tg-video-viewport {
       position: relative;
       width: 100%;
-      max-width: 340px;
-      height: 490px;
+      max-width: 295px; /* Narrowed to eliminate side blur strips */
+      height: 485px;
       margin: 0 auto;
       overflow: hidden;
       border-radius: 1.5rem;
       background-color: #000;
     }
 
-    /* Shifted further left (-19%) & zoomed (138%) to eliminate left-side blur */
+    /* Precise Shift: Pulls left blur strip (-72px) & top header (-65px) out of bounds */
     .tg-video-viewport iframe {
       position: absolute;
       top: -65px !important;
-      left: -19% !important;
-      width: 138% !important;
-      height: 770px !important;
+      left: -72px !important;
+      width: calc(100% + 145px) !important;
+      height: 780px !important;
       border: none !important;
     }
   </style>
@@ -96,7 +96,7 @@
     >
       <div class="overflow-hidden whitespace-nowrap w-full">
         <div class="marquee-container flex items-center">
-          <!-- Item Set 1 -->
+          <!-- Set 1 -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
@@ -114,7 +114,7 @@
             </span>
           </div>
 
-          <!-- Item Set 2 (Continuous Loop) -->
+          <!-- Set 2 (Continuous Loop) -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
@@ -172,19 +172,19 @@
       </div>
 
       <!-- Playable Video Frame Container -->
-      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2.5">
+      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2 px-2">
         
-        <!-- 🎥 Pure Video Embed Viewport -->
-        <div id="telegramEmbedContainer" class="w-full flex justify-center items-center"></div>
+        <!-- 🎥 Pure Video Embed Viewport (Narrow 8:16) -->
+        <div id="telegramEmbedContainer" class="w-full flex justify-center items-center relative"></div>
 
-        <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-5 left-5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+        <!-- 📌 POST NO BADGE (Aligned to Container) -->
+        <div class="absolute top-5 left-1/2 -translate-x-[135px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[340px] px-2 mt-2.5 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[295px] px-1 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>

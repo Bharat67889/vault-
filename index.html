@@ -44,11 +44,10 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Balanced 8:16 Viewport (Symmetrical Clean Fit) */
+    /* 🎬 Perfect Tight Video Viewport (Strips Left Blur completely) */
     .tg-video-viewport {
       position: relative;
-      width: 100%;
-      max-w: 310px;
+      width: 275px; /* Locked to exact Telegram 9:16 core width */
       height: 485px;
       margin: 0 auto;
       overflow: hidden;
@@ -56,13 +55,15 @@
       background-color: #000;
     }
 
-    /* Balanced Alignment: -48px left shift with exactly +96px width gives true center */
+    /* Transform Zoom & Reposition: Eliminates left blur padding & hides header/captions */
     .tg-video-viewport iframe {
       position: absolute;
-      top: -62px !important;
-      left: -48px !important;
-      width: calc(100% + 96px) !important;
-      height: 770px !important;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 650px !important;
+      transform: scale(1.36) translate(-14px, -18px);
+      transform-origin: top left;
       border: none !important;
     }
   </style>
@@ -174,17 +175,17 @@
       <!-- Playable Video Frame Container -->
       <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2 px-2">
         
-        <!-- 🎥 Pure Video Embed Viewport (Centered) -->
+        <!-- 🎥 Pure Video Embed Viewport -->
         <div id="telegramEmbedContainer" class="w-full flex justify-center items-center relative"></div>
 
         <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-5 left-1/2 -translate-x-[140px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+        <div class="absolute top-5 left-1/2 -translate-x-[125px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[310px] px-1 mt-2.5 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[275px] px-1 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>

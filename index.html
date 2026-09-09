@@ -30,7 +30,7 @@
     .pulse-btn { animation: pulseGlow 2s infinite; }
     .glass-nav { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(14px); }
     
-    /* 🚀 100% Seamless Infinite Marquee Loop (Zero Gap / Never Empty) */
+    /* 🚀 Continuous Marquee Track (Zero Stutter / Infinite Loop) */
     @keyframes marqueeContinuous {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -38,17 +38,19 @@
     .marquee-container {
       display: flex;
       width: max-content;
-      animation: marqueeContinuous 16s linear infinite;
+      animation: marqueeContinuous 15s linear infinite;
     }
     .marquee-container:hover {
       animation-play-state: paused;
     }
 
-    /* 🎬 Perfect Crop Container: Strips Header, Logos, Captions & Side Gap */
+    /* 🎬 Tight 9:16 Video Frame (No side padding, no header, no captions) */
     .tg-crop-container {
       position: relative;
-      width: 100%;
-      height: 470px;
+      width: 280px;
+      max-width: 100%;
+      height: 480px;
+      margin: 0 auto;
       overflow: hidden;
       border-radius: 1.25rem;
       background-color: #000;
@@ -56,15 +58,24 @@
 
     .tg-crop-container iframe {
       position: absolute;
-      top: -46px !important; /* Pushes Telegram channel name, avatar & header OUT of screen */
-      left: -6.5% !important; /* Strips side borders/padding */
-      width: 113% !important; /* Zooms video edge-to-edge */
-      height: 720px !important; /* Pushes text, links & caption completely below view */
+      top: -46px !important;
+      left: -14px !important;
+      width: calc(100% + 28px) !important;
+      height: 720px !important;
       border: none !important;
     }
   </style>
 
   <script>
+    // 📲 Deep Link: Force opens the native Telegram App on iOS/Android
+    function openTelegramApp(e) {
+      if (e) e.preventDefault();
+      window.location.href = "tg://resolve?domain=prettyladies4";
+      setTimeout(() => {
+        window.location.href = "https://t.me/prettyladies4";
+      }, 1000);
+    }
+
     function handleThumbError(img) {
       if (!img.dataset.failedOnce && window.currentModel) {
         img.dataset.failedOnce = "true";
@@ -77,13 +88,11 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-pink-500 selection:text-white relative pb-20">
 
-  <!-- 🧭 HEADER WITH SEAMLESS 24/7 RUNNING TICKER -->
+  <!-- 🧭 HEADER WITH DIRECT DEEP-LINK RUNNING BANNER -->
   <header class="sticky top-0 z-40 glass-nav border-b border-slate-800 shadow-lg overflow-hidden">
-    <a 
-      href="https://t.me/prettyladies4" 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      class="block py-2.5 px-2 bg-gradient-to-r from-pink-950/50 via-purple-950/50 to-sky-950/50 border-b border-pink-500/20 text-xs font-bold text-pink-200"
+    <div 
+      onclick="openTelegramApp(event)" 
+      class="cursor-pointer block py-2.5 px-2 bg-gradient-to-r from-pink-950/50 via-purple-950/50 to-sky-950/50 border-b border-pink-500/20 text-xs font-bold text-pink-200"
     >
       <div class="overflow-hidden whitespace-nowrap w-full">
         <div class="marquee-container flex items-center">
@@ -92,7 +101,7 @@
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
               <span>Want 100% Ad-Free Clips & Daily Updates?</span> 
-              <span class="text-sky-400 font-extrabold underline decoration-sky-400 underline-offset-2">Join Official Telegram Channel 👉 Click Here</span> 
+              <span class="text-sky-400 font-extrabold underline decoration-sky-400 underline-offset-2">Open Official Telegram App 👉 Tap Here</span> 
               <span class="text-[10px] bg-sky-500/30 text-sky-300 border border-sky-400/40 px-2 py-0.5 rounded-full font-black ml-1">FREE VIP</span>
             </span>
             <span class="flex items-center gap-2 text-slate-400 font-medium">
@@ -105,12 +114,12 @@
             </span>
           </div>
 
-          <!-- Item Set 2 (Duplicate for Continuous Loop - Never empty!) -->
+          <!-- Item Set 2 (Never-Empty Loop) -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
               <span>Want 100% Ad-Free Clips & Daily Updates?</span> 
-              <span class="text-sky-400 font-extrabold underline decoration-sky-400 underline-offset-2">Join Official Telegram Channel 👉 Click Here</span> 
+              <span class="text-sky-400 font-extrabold underline decoration-sky-400 underline-offset-2">Open Official Telegram App 👉 Tap Here</span> 
               <span class="text-[10px] bg-sky-500/30 text-sky-300 border border-sky-400/40 px-2 py-0.5 rounded-full font-black ml-1">FREE VIP</span>
             </span>
             <span class="flex items-center gap-2 text-slate-400 font-medium">
@@ -124,7 +133,7 @@
           </div>
         </div>
       </div>
-    </a>
+    </div>
   </header>
 
   <!-- 🔍 SEARCH BAR -->
@@ -156,26 +165,26 @@
 
     <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
       
-      <!-- 💫 CARD TRANSITION SPINNER -->
+      <!-- 💫 TRANSITION SPINNER -->
       <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
         <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Playable Video Frame Container (Edge-To-Edge Clean View) -->
-      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center p-0">
+      <!-- Playable Video Frame Container -->
+      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2">
         
-        <!-- 🎥 Capped & Precision-Cropped Telegram Video Player -->
-        <div id="telegramEmbedContainer" class="w-full"></div>
+        <!-- 🎥 Capped & Cropped Video Frame -->
+        <div id="telegramEmbedContainer" class="w-full flex justify-center items-center"></div>
 
         <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-4 left-4 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+        <div class="absolute top-5 left-5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full px-3 py-2 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[290px] px-2 mt-3 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
@@ -254,12 +263,10 @@
     </div>
   </main>
 
-  <!-- 💬 TELEGRAM BUBBLE -->
+  <!-- 💬 TELEGRAM FLOATING SHORTCUT -->
   <aside aria-label="Telegram Channel" class="fixed bottom-6 right-5 z-50">
-    <a 
-      href="https://t.me/prettyladies4" 
-      target="_blank" 
-      rel="noopener noreferrer" 
+    <button 
+      onclick="openTelegramApp(event)"
       class="flex items-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white pl-2 pr-3.5 py-2 rounded-full shadow-2xl border border-sky-300/40 transition-transform active:scale-90 group backdrop-blur-md"
     >
       <div class="w-8 h-8 rounded-full bg-white text-sky-600 flex items-center justify-center text-base shadow group-hover:rotate-12 transition-transform">
@@ -269,7 +276,7 @@
         <span class="text-[9px] font-bold text-sky-100 uppercase tracking-tighter">Ad-Free</span>
         <span class="text-xs font-black tracking-tight">Telegram</span>
       </div>
-    </a>
+    </button>
   </aside>
 
   <footer class="mt-auto py-4 border-t border-slate-900 text-center text-xs text-slate-600">
@@ -328,7 +335,6 @@
             if (!isNaN(colE_tgId) && colE_tgId > 0) {
               calculatedTgId = colE_tgId;
             } else {
-              // Post 14 tak: 532 + post. Post 16+ ke missing shift ke liye adjust
               calculatedTgId = (finalPost <= 14) ? (532 + finalPost) : (531 + finalPost);
             }
 
@@ -423,7 +429,7 @@
       blurredHandle.innerText = "@••••••••••";
 
       embedContainer.innerHTML = `
-        <div class="tg-crop-container shadow-2xl">
+        <div class="tg-crop-container shadow-2xl border border-slate-800">
           <iframe 
             src="https://t.me/prettyladies4/${window.currentModel.tgMessageId}?embed=1" 
             scrolling="no" 

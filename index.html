@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESSZBP1JLC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESSZBP1JLC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-ESSZBP1JLC');
-</script>
+    gtag('config', 'G-ESSZBP1JLC');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pretty Ladies Vault | Discover Creator Profiles</title>
@@ -29,6 +29,13 @@
     }
     .pulse-btn { animation: pulseGlow 2s infinite; }
     .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px); }
+    
+    /* Responsive Telegram Frame Styling */
+    #telegramEmbedContainer iframe {
+      border-radius: 1rem !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+    }
   </style>
 
   <script>
@@ -89,32 +96,26 @@
       <!-- 💫 CARD TRANSITION SPINNER -->
       <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
-        <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Model...</span>
+        <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
       </div>
 
-      <!-- Vertical Portrait Frame -->
-      <div class="relative aspect-[9/15] sm:aspect-[9/16] w-full bg-black overflow-hidden flex items-center justify-center">
-        <img 
-          id="modelThumbnail" 
-          src="" 
-          alt="Model Preview" 
-          class="w-full h-full object-cover transition duration-300"
-          onerror="handleThumbError(this)"
-        >
-
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
+      <!-- Vertical Playable Reel Frame -->
+      <div class="relative min-h-[460px] w-full bg-black overflow-hidden flex flex-col items-center justify-center p-2">
+        
+        <!-- 🎥 Playable Telegram Video Stream -->
+        <div id="telegramEmbedContainer" class="w-full flex items-center justify-center min-h-[400px]"></div>
 
         <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-10 shadow-xl">
+        <div class="absolute top-3.5 left-3.5 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="absolute bottom-3.5 inset-x-3.5 text-center z-10">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
-            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
-            <span id="blurredHandle" class="text-xl font-black text-pink-400 tracking-widest">@••••••••••</span>
+        <div id="handleBanner" class="w-full px-2 mt-2 text-center z-20">
+          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2 px-4 rounded-2xl shadow-xl">
+            <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
+            <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
           </div>
         </div>
       </div>
@@ -193,9 +194,9 @@
   <!-- 💬 TELEGRAM BUBBLE -->
   <aside aria-label="Telegram Channel" class="fixed bottom-6 right-5 z-50">
     <a 
-      href="https://t.me/PRETTYLADIES4" 
+      href="https://t.me/prettyladies4" 
       target="_blank" 
-      rel="noopener noreferrer"
+      rel="noopener noreferrer" 
       class="flex items-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white pl-2 pr-3.5 py-2 rounded-full shadow-2xl border border-sky-300/40 transition-transform active:scale-90 group backdrop-blur-md"
     >
       <div class="w-8 h-8 rounded-full bg-white text-sky-600 flex items-center justify-center text-base shadow group-hover:rotate-12 transition-transform">
@@ -214,7 +215,6 @@
 
   <!-- ⚙️ DIRECT GVIZ PARSER ENGINE -->
   <script>
-    // Playwright wala exact gviz/tq endpoint for Queue tab
     const SHEET_GVIZ_URL = "https://docs.google.com/spreadsheets/d/1MrwItyy6IPNLSJbz1b53TGOTS2JBLTyg46Ql9xZpI6w/gviz/tq?tqx=out:csv&sheet=Queue";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
 
@@ -256,23 +256,27 @@
           const username = row[1] || "creator";
           const status = (row[2] || "").toUpperCase();
           const colD = parseInt(row[3]);
+          const colE_tgId = parseInt(row[4]); // 👈 Column E: Telegram Message ID
 
           // Sirf COMPLETED rows hi vault par dikhayenge
           if (shortcode && shortcode.length > 3 && status === "COMPLETED") {
             const finalPost = (!isNaN(colD) && colD > 0) ? colD : postCounter;
+            
+            // Post 1 = 533 baseline formula if Column E is yet to be populated
+            const finalTgId = (!isNaN(colE_tgId) && colE_tgId > 0) ? colE_tgId : (532 + finalPost);
 
             db.push({
               shortcode: shortcode,
               username: username,
               status: status,
-              postIndex: finalPost
+              postIndex: finalPost,
+              tgMessageId: finalTgId
             });
 
             postCounter++;
           }
         }
 
-        // Fresh Reset: Jab sabhi rows PENDING ho chuki hain
         if (db.length === 0) {
           document.getElementById('loader').innerHTML = `
             <div class="bg-slate-900 border border-pink-500/30 p-6 rounded-3xl text-center space-y-2 max-w-sm mx-auto shadow-xl">
@@ -342,20 +346,28 @@
       const loader = document.getElementById('loader');
       const card = document.getElementById('contentCard');
       const cardSpinner = document.getElementById('cardSpinner');
-      const thumb = document.getElementById('modelThumbnail');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
+      const embedContainer = document.getElementById('telegramEmbedContainer');
 
       cardSpinner.classList.remove('hidden');
 
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
-      
-      thumb.dataset.failedOnce = "";
-      thumb.src = getThumbUrl(window.currentModel.shortcode, 'l');
 
-      thumb.onload = () => { cardSpinner.classList.add('hidden'); };
-      setTimeout(() => { cardSpinner.classList.add('hidden'); }, 1200);
+      // 🎬 Inject Dynamic Telegram Stream Embed
+      embedContainer.innerHTML = "";
+      const tgScript = document.createElement("script");
+      tgScript.async = true;
+      tgScript.src = "https://telegram.org/js/telegram-widget.js?22";
+      tgScript.setAttribute("data-telegram-post", `prettyladies4/${window.currentModel.tgMessageId}`);
+      tgScript.setAttribute("data-width", "100%");
+      tgScript.setAttribute("data-userpic", "false");
+      tgScript.setAttribute("data-color", "E11D48");
+      tgScript.setAttribute("data-dark", "1");
+      embedContainer.appendChild(tgScript);
+
+      setTimeout(() => { cardSpinner.classList.add('hidden'); }, 700);
 
       loader.classList.add('hidden');
       card.classList.remove('hidden');
@@ -454,8 +466,8 @@
           <div class="relative aspect-[9/13] bg-slate-950 overflow-hidden">
             <img 
               src="${getThumbUrl(item.shortcode, 'm')}" 
-              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-              loading="lazy"
+              class="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+              loading="lazy" 
               onerror="handleThumbError(this)"
             >
             <div class="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-pink-500/30 flex items-baseline gap-1 shadow-md">

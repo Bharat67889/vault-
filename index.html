@@ -44,26 +44,27 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Perfect Tight Video Viewport (Strips Left Blur completely) */
+    /* 🎬 Pure Video Viewport */
     .tg-video-viewport {
       position: relative;
-      width: 275px; /* Locked to exact Telegram 9:16 core width */
-      height: 485px;
+      width: 100%;
+      max-width: 320px;
+      height: 440px;
       margin: 0 auto;
       overflow: hidden;
       border-radius: 1.5rem;
       background-color: #000;
     }
 
-    /* Transform Zoom & Reposition: Eliminates left blur padding & hides header/captions */
+    /* Precision Crop: Eliminates header, bottom caption, and side blur bars completely */
     .tg-video-viewport iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: absolute !important;
+      top: -48px !important;
+      left: 50% !important;
+      transform: translateX(-50%) scale(1.24) !important;
+      transform-origin: center top !important;
       width: 100% !important;
-      height: 650px !important;
-      transform: scale(1.36) translate(-14px, -18px);
-      transform-origin: top left;
+      height: 620px !important;
       border: none !important;
     }
   </style>
@@ -179,13 +180,13 @@
         <div id="telegramEmbedContainer" class="w-full flex justify-center items-center relative"></div>
 
         <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-5 left-1/2 -translate-x-[125px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+        <div class="absolute top-5 left-1/2 -translate-x-[140px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
           <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
           <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[275px] px-1 mt-2.5 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[320px] px-1 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>

@@ -44,27 +44,27 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Pure Video Viewport */
+    /* 🎬 Pure Video Viewport (Height increased to 480px to stop bottom cut) */
     .tg-video-viewport {
       position: relative;
       width: 100%;
-      max-width: 320px;
-      height: 440px;
+      max-width: 325px;
+      height: 480px;
       margin: 0 auto;
       overflow: hidden;
       border-radius: 1.5rem;
       background-color: #000;
     }
 
-    /* Precision Crop: Eliminates header, bottom caption, and side blur bars completely */
+    /* Precision Calibration: -58px cuts top header, scale(1.30) strips side blur, bottom fully visible */
     .tg-video-viewport iframe {
       position: absolute !important;
-      top: -48px !important;
+      top: -58px !important;
       left: 50% !important;
-      transform: translateX(-50%) scale(1.24) !important;
+      transform: translateX(-50%) scale(1.30) !important;
       transform-origin: center top !important;
       width: 100% !important;
-      height: 620px !important;
+      height: 670px !important;
       border: none !important;
     }
   </style>
@@ -186,7 +186,7 @@
         </div>
 
         <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[320px] px-1 mt-2.5 text-center z-20">
+        <div id="handleBanner" class="w-full max-w-[325px] px-1 mt-2.5 text-center z-20">
           <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
             <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
             <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
@@ -601,3 +601,4 @@
   </script>
 </body>
 </html>
+

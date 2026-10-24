@@ -30,7 +30,7 @@
     .pulse-btn { animation: pulseGlow 2s infinite; }
     .glass-nav { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(14px); }
     
-    /* 🚀 Continuous Marquee Track (Zero Stutter / Infinite Loop) */
+    /* 🚀 Continuous Marquee Track */
     @keyframes marqueeContinuous {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -44,7 +44,7 @@
       animation-play-state: paused;
     }
 
-    /* 🎬 Pure Video Viewport (Height increased to 480px to stop bottom cut) */
+    /* 🎬 Pure Video Viewport */
     .tg-video-viewport {
       position: relative;
       width: 100%;
@@ -56,7 +56,6 @@
       background-color: #000;
     }
 
-    /* Precision Calibration: -58px cuts top header, scale(1.30) strips side blur, bottom fully visible */
     .tg-video-viewport iframe {
       position: absolute !important;
       top: -58px !important;
@@ -79,9 +78,9 @@
     }
 
     function handleThumbError(img) {
-      if (!img.dataset.failedOnce && window.currentModel) {
+      if (!img.dataset.failedOnce && img.dataset.shortcode) {
         img.dataset.failedOnce = "true";
-        img.src = "https://instagram.com/p/" + window.currentModel.shortcode + "/media/?size=l";
+        img.src = "https://instagram.com/p/" + img.dataset.shortcode + "/media/?size=l";
       } else {
         img.src = "https://placehold.co/400x600/0f172a/ec4899?text=Vault+Model";
       }
@@ -98,7 +97,6 @@
     >
       <div class="overflow-hidden whitespace-nowrap w-full">
         <div class="marquee-container flex items-center">
-          <!-- Set 1 -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
@@ -116,7 +114,6 @@
             </span>
           </div>
 
-          <!-- Set 2 (Continuous Loop) -->
           <div class="flex items-center gap-6 px-4">
             <span class="flex items-center gap-2 tracking-wide">
               <span class="text-pink-400">🔥</span> 
@@ -138,13 +135,22 @@
     </div>
   </header>
 
-  <!-- 🔍 SEARCH BAR -->
-  <div class="max-w-md mx-auto w-full px-4 pt-3.5">
+  <!-- 🔍 SEARCH & BRAND BAR -->
+  <div class="max-w-4xl mx-auto w-full px-4 pt-4">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-2">
+      <a href="/" onclick="showHomeView(event)" class="text-lg font-black tracking-wider bg-gradient-to-r from-pink-400 via-rose-300 to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
+        <span>PRETTY LADIES VAULT</span>
+      </a>
+      <div id="viewStateBadge" class="hidden text-xs bg-slate-900 border border-slate-800 text-slate-400 px-3 py-1 rounded-full">
+        Viewing Post
+      </div>
+    </div>
+
     <form id="searchForm" class="relative flex items-center">
       <input 
         type="text" 
         id="searchInput" 
-        placeholder="Enter Post # (e.g. 1)..." 
+        placeholder="Enter Post # (e.g. 1, 2, 5)..." 
         class="w-full bg-slate-900 border border-slate-800 focus:border-pink-500 text-sm rounded-xl py-2.5 pl-9 pr-20 text-white placeholder-slate-500 focus:outline-none transition shadow-inner"
       >
       <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-500 text-sm"></i>
@@ -157,112 +163,125 @@
     </form>
   </div>
 
-  <!-- 🎯 MAIN HERO CARD -->
-  <main class="max-w-md mx-auto w-full px-4 pt-4 flex-grow">
+  <!-- 🎯 MAIN CONTAINER -->
+  <main class="max-w-4xl mx-auto w-full px-4 pt-4 flex-grow">
     
+    <!-- LOADER -->
     <div id="loader" class="text-center py-20">
       <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-3xl mb-3"></i>
       <p class="text-sm text-slate-400 font-medium">Syncing verified vault model...</p>
     </div>
 
-    <div id="contentCard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
-      
-      <!-- 💫 CARD TRANSITION SPINNER -->
-      <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
-        <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
-        <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
-      </div>
-
-      <!-- Playable Video Frame Container -->
-      <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2 px-2">
-        
-        <!-- 🎥 Pure Video Embed Viewport -->
-        <div id="telegramEmbedContainer" class="w-full flex justify-center items-center relative"></div>
-
-        <!-- 📌 POST NO BADGE -->
-        <div class="absolute top-5 left-1/2 -translate-x-[140px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
-          <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
-          <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
-        </div>
-
-        <!-- Masked Handle Floating Pill -->
-        <div id="handleBanner" class="w-full max-w-[325px] px-1 mt-2.5 text-center z-20">
-          <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
-            <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
-            <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action & Timer Section -->
-      <div class="p-4 sm:p-5 space-y-3.5 bg-slate-900">
+    <!-- 🌟 HERO PLAYER SECTION (Card click hone par open hoga) -->
+    <div id="playerSection" class="hidden mb-10 max-w-md mx-auto">
+      <div class="flex items-center justify-between mb-3 px-1">
         <button 
-          id="unlockBtn" 
-          class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2.5 transition active:scale-98"
+          onclick="showHomeView(event)" 
+          class="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl transition"
         >
-          <i class="fa-solid fa-lock text-base"></i>
-          <span>TAP TO REVEAL PROFILE ID</span>
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Back to All Posts</span>
         </button>
+        <span class="text-[11px] text-slate-400 font-semibold">Active Viewer</span>
+      </div>
 
-        <div id="timerContainer" class="hidden space-y-2.5 pt-1">
-          <div class="flex justify-between text-xs text-slate-300 font-bold">
-            <span>Decrypting Handle...</span>
-            <span id="countdownText" class="text-pink-400 font-extrabold">5s</span>
+      <div id="contentCard" class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
+        <div id="cardSpinner" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-2.5 transition duration-200">
+          <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-4xl"></i>
+          <span class="text-xs font-bold text-pink-300 tracking-wider">Loading Video Stream...</span>
+        </div>
+
+        <div class="relative w-full bg-black overflow-hidden flex flex-col items-center justify-center pt-3 pb-2 px-2">
+          <div id="telegramEmbedContainer" class="w-full flex justify-center items-center relative"></div>
+
+          <div class="absolute top-5 left-1/2 -translate-x-[140px] bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-500/40 flex items-baseline gap-1.5 z-20 shadow-xl pointer-events-none">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">POST NO.</span>
+            <span id="postLabel" class="text-lg font-black text-pink-400 leading-none">---</span>
           </div>
-          <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2.5 rounded-full w-0 transition-all duration-1000"></div>
-          </div>
-          
-          <!-- 📢 AD SLOT: 300x250 BANNER -->
-          <div class="flex justify-center items-center pt-3 overflow-hidden rounded-2xl bg-slate-950/60 border border-slate-800 p-2 shadow-inner">
-            <script>
-              atOptions = {
-                'key' : '6804faa82225aa5efc3987659938b8ef',
-                'format' : 'iframe',
-                'height' : 250,
-                'width' : 300,
-                'params' : {}
-              };
-            </script>
-            <script src="https://www.highrevenueformat.com/6804faa82225aa5efc3987659938b8ef/invoke.js"></script>
+
+          <div id="handleBanner" class="w-full max-w-[325px] px-1 mt-2.5 text-center z-20">
+            <div class="inline-block w-full bg-slate-950/90 backdrop-blur-md border border-slate-800 py-2.5 px-4 rounded-2xl shadow-xl">
+              <span class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold block mb-0.5">INSTAGRAM PROFILE ID</span>
+              <span id="blurredHandle" class="text-lg font-black text-pink-400 tracking-widest">@••••••••••</span>
+            </div>
           </div>
         </div>
 
-        <a 
-          id="finalProfileLink" 
-          href="#" 
-          target="_blank" 
-          class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2 text-center transition shadow-lg shadow-emerald-950 active:scale-98"
-        >
-          <i class="fa-brands fa-instagram text-lg"></i>
-          <span id="unlockedBtnText">OPEN INSTAGRAM PROFILE</span>
-        </a>
+        <div class="p-4 sm:p-5 space-y-3.5 bg-slate-900">
+          <button 
+            id="unlockBtn" 
+            class="w-full pulse-btn bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 hover:opacity-95 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2.5 transition active:scale-98"
+          >
+            <i class="fa-solid fa-lock text-base"></i>
+            <span>TAP TO REVEAL PROFILE ID</span>
+          </button>
+
+          <div id="timerContainer" class="hidden space-y-2.5 pt-1">
+            <div class="flex justify-between text-xs text-slate-300 font-bold">
+              <span>Decrypting Handle...</span>
+              <span id="countdownText" class="text-pink-400 font-extrabold">5s</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+              <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2.5 rounded-full w-0 transition-all duration-1000"></div>
+            </div>
+            
+            <!-- 📢 AD SLOT: 300x250 BANNER -->
+            <div class="flex justify-center items-center pt-3 overflow-hidden rounded-2xl bg-slate-950/60 border border-slate-800 p-2 shadow-inner">
+              <script>
+                atOptions = {
+                  'key' : '6804faa82225aa5efc3987659938b8ef',
+                  'format' : 'iframe',
+                  'height' : 250,
+                  'width' : 300,
+                  'params' : {}
+                };
+              </script>
+              <script src="https://www.highrevenueformat.com/6804faa82225aa5efc3987659938b8ef/invoke.js"></script>
+            </div>
+          </div>
+
+          <a 
+            id="finalProfileLink" 
+            href="#" 
+            target="_blank" 
+            class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 px-4 rounded-2xl text-sm tracking-wide flex items-center justify-center gap-2 text-center transition shadow-lg shadow-emerald-950 active:scale-98"
+          >
+            <i class="fa-brands fa-instagram text-lg"></i>
+            <span id="unlockedBtnText">OPEN INSTAGRAM PROFILE</span>
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- 📢 AD SLOT: NATIVE BANNER -->
-    <div class="mt-6 rounded-2xl overflow-hidden bg-slate-900/50 border border-slate-800 p-2 shadow-lg">
+    <div class="mb-6 rounded-2xl overflow-hidden bg-slate-900/50 border border-slate-800 p-2 shadow-lg">
       <script async="async" data-cfasync="false" src="https://pl31203224.profitableratecpmnetwork.com/ebc9cc75cbd35e9ff229beb64be68069/invoke.js"></script>
       <div id="container-ebc9cc75cbd35e9ff229beb64be68069"></div>
     </div>
 
-    <!-- 🔥 ENDLESS VAULT STREAM -->
-    <div class="mt-6">
-      <div class="flex items-center justify-between mb-3 px-1">
-        <h2 class="text-xs font-black text-slate-200 tracking-wider uppercase flex items-center gap-2">
-          <span class="text-pink-500 text-base">✨</span> Endless Vault Stream
-        </h2>
-        <span class="text-[11px] text-slate-500 font-bold">Auto Refreshing</span>
+    <!-- 🎴 3-COLUMN CARD GRID (Home Page Gallery) -->
+    <section class="mt-4">
+      <div class="flex items-center justify-between mb-4 px-1">
+        <div>
+          <h2 id="gridHeading" class="text-sm font-black text-slate-100 tracking-wider uppercase flex items-center gap-2">
+            <span class="text-pink-500 text-base">✨</span> Vault Feed
+          </h2>
+          <p class="text-xs text-slate-500">Sorted sequentially: Post 1, 2, 3...</p>
+        </div>
+        <span id="postCountBadge" class="text-xs bg-slate-900 border border-slate-800 text-pink-400 font-bold px-3 py-1 rounded-full">
+          0 Posts
+        </span>
       </div>
 
-      <div id="exploreGrid" class="grid grid-cols-2 gap-3.5">
-        <!-- Injected stream cards -->
+      <!-- 3-COLUMNS RESPONSIVE GRID -->
+      <div id="exploreGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Injected cards -->
       </div>
 
       <div id="scrollSentinel" class="py-8 flex justify-center items-center">
         <i class="fa-solid fa-circle-notch fa-spin text-pink-500 text-xl"></i>
       </div>
-    </div>
+    </section>
   </main>
 
   <!-- 💬 TELEGRAM FLOATING SHORTCUT -->
@@ -285,7 +304,7 @@
     Pretty Ladies Vault &bull; Auto Curated Daily
   </footer>
 
-  <!-- ⚙️ DIRECT GVIZ PARSER ENGINE -->
+  <!-- ⚙️ SCRIPT ENGINE -->
   <script>
     const SHEET_GVIZ_URL = "https://docs.google.com/spreadsheets/d/1MrwItyy6IPNLSJbz1b53TGOTS2JBLTyg46Ql9xZpI6w/gviz/tq?tqx=out:csv&sheet=Queue";
     const SMARTLINK_URL = "https://www.profitableratecpmnetwork.com/jwdwh4yz?key=587e81aea49c6c24586e3f04326a297d";
@@ -294,6 +313,7 @@
     window.currentModel = null;
     let observer = null;
     let cardsRenderedCount = 0;
+    const BATCH_SIZE = 9; // 3 rows of 3 columns
 
     function parseCSVLine(line) {
       const row = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
@@ -311,7 +331,6 @@
     }
 
     async function initVault() {
-      console.log("🚀 Fetching live Queue sheet via GViz...");
       try {
         const res = await fetch(SHEET_GVIZ_URL + "&t=" + Date.now(), { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -363,11 +382,19 @@
           return;
         }
 
-        console.log("✅ COMPLETED models synced:", db.length);
+        // Sequential sorting: 1, 2, 3, 4, 5...
+        db.sort((a, b) => a.postIndex - b.postIndex);
+
+        document.getElementById('postCountBadge').innerText = `${db.length} Posts`;
+        document.getElementById('loader').classList.add('hidden');
 
         const targetId = extractTargetId();
-        loadActiveModel(targetId, false);
-        refreshGrid(8);
+        if (targetId) {
+          loadActiveModel(targetId, true);
+        } else {
+          showHomeView();
+        }
+
         setupIntersectionObserver();
 
       } catch (err) {
@@ -383,50 +410,53 @@
       }
     }
 
-    function loadActiveModel(query, triggerRefresh = true) {
+    function showHomeView(e) {
+      if (e) e.preventDefault();
+      window.history.pushState({}, '', window.location.pathname);
+      document.getElementById('playerSection').classList.add('hidden');
+      document.getElementById('viewStateBadge').classList.add('hidden');
+      document.getElementById('gridHeading').innerHTML = `<span class="text-pink-500 text-base">✨</span> All Posts (1, 2, 3...)`;
+      refreshGrid(12);
+    }
+
+    function loadActiveModel(query, scrollToTop = true) {
       if (!db || db.length === 0) return;
 
-      if (!query) {
-        const sorted = [...db].sort((a, b) => a.postIndex - b.postIndex);
-        window.currentModel = sorted[sorted.length - 1];
-      } else {
-        const cleanQuery = String(query).trim();
-        const numericId = parseInt(cleanQuery);
+      const cleanQuery = String(query).trim();
+      const numericId = parseInt(cleanQuery);
 
-        let match = null;
-
-        if (!isNaN(numericId) && numericId > 0) {
-          match = db.find(m => m.postIndex === numericId);
-        }
-
-        if (!match) {
-          match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
-        }
-
-        if (!match) {
-          match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
-        }
-
-        window.currentModel = match || db[db.length - 1];
+      let match = null;
+      if (!isNaN(numericId) && numericId > 0) {
+        match = db.find(m => m.postIndex === numericId);
       }
+      if (!match) {
+        match = db.find(m => m.username.toLowerCase() === cleanQuery.toLowerCase());
+      }
+      if (!match) {
+        match = db.find(m => m.shortcode.toLowerCase() === cleanQuery.toLowerCase());
+      }
+
+      window.currentModel = match || db[0];
       
       renderHero();
 
-      if (triggerRefresh) {
-        refreshGrid(8);
+      document.getElementById('playerSection').classList.remove('hidden');
+      document.getElementById('viewStateBadge').classList.remove('hidden');
+      document.getElementById('viewStateBadge').innerText = `Viewing Post #${window.currentModel.postIndex}`;
+      document.getElementById('gridHeading').innerHTML = `<span class="text-pink-500 text-base">✨</span> More Posts`;
+
+      if (scrollToTop) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
     function renderHero() {
-      const loader = document.getElementById('loader');
-      const card = document.getElementById('contentCard');
       const cardSpinner = document.getElementById('cardSpinner');
       const label = document.getElementById('postLabel');
       const blurredHandle = document.getElementById('blurredHandle');
       const embedContainer = document.getElementById('telegramEmbedContainer');
 
       cardSpinner.classList.remove('hidden');
-
       label.innerText = window.currentModel.postIndex;
       blurredHandle.innerText = "@••••••••••";
 
@@ -443,21 +473,9 @@
 
       setTimeout(() => { cardSpinner.classList.add('hidden'); }, 600);
 
-      loader.classList.add('hidden');
-      card.classList.remove('hidden');
-
       document.getElementById('unlockBtn').classList.remove('hidden');
       document.getElementById('timerContainer').classList.add('hidden');
       document.getElementById('finalProfileLink').classList.add('hidden');
-    }
-
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
     }
 
     function getThumbUrl(shortcode, size = 'l') {
@@ -503,7 +521,7 @@
       }, 1000);
     });
 
-    function refreshGrid(count = 8) {
+    function refreshGrid(count = BATCH_SIZE) {
       const grid = document.getElementById('exploreGrid');
       grid.innerHTML = "";
       cardsRenderedCount = 0;
@@ -512,7 +530,7 @@
 
     function createInlineAdCard() {
       const adWrapper = document.createElement('div');
-      adWrapper.className = "col-span-2 my-1 rounded-2xl overflow-hidden bg-slate-900/90 border border-dashed border-pink-500/30 p-2 text-center shadow-lg flex flex-col items-center justify-center min-h-[140px]";
+      adWrapper.className = "col-span-2 md:col-span-3 my-2 rounded-2xl overflow-hidden bg-slate-900/90 border border-dashed border-pink-500/30 p-2.5 text-center shadow-lg flex flex-col items-center justify-center min-h-[140px]";
       adWrapper.innerHTML = `
         <div class="w-full flex justify-between items-center px-2 pb-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
           <span>Sponsored Recommendation</span>
@@ -529,17 +547,25 @@
       return adWrapper;
     }
 
-    function appendBatchToGrid(count = 6) {
+    function appendBatchToGrid(count = BATCH_SIZE) {
       const grid = document.getElementById('exploreGrid');
-      const randomized = shuffleArray(db).slice(0, count);
+      const start = cardsRenderedCount;
+      const end = Math.min(start + count, db.length);
 
-      randomized.forEach(item => {
+      if (start >= db.length) {
+        document.getElementById('scrollSentinel').innerHTML = `<p class="text-xs text-slate-500">All available posts loaded</p>`;
+        return;
+      }
+
+      for (let i = start; i < end; i++) {
+        const item = db[i];
         const card = document.createElement('div');
         card.className = "bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden cursor-pointer hover:border-pink-500/60 transition duration-300 flex flex-col group shadow-lg";
         card.innerHTML = `
           <div class="relative aspect-[9/13] bg-slate-950 overflow-hidden">
             <img 
               src="${getThumbUrl(item.shortcode, 'm')}" 
+              data-shortcode="${item.shortcode}"
               class="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
               loading="lazy" 
               onerror="handleThumbError(this)"
@@ -556,7 +582,6 @@
         `;
 
         card.addEventListener('click', () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
           const newUrl = window.location.pathname + '?id=' + item.postIndex;
           window.history.pushState({ id: item.postIndex }, '', newUrl);
           loadActiveModel(item.postIndex, true);
@@ -565,27 +590,32 @@
         grid.appendChild(card);
         cardsRenderedCount++;
 
-        if (cardsRenderedCount % 4 === 0) {
+        // Har 6 cards (2 rows of 3) ke baad ek sponsored recommendation card insert hoga
+        if (cardsRenderedCount % 6 === 0 && cardsRenderedCount < db.length) {
           grid.appendChild(createInlineAdCard());
         }
-      });
+      }
     }
 
     function setupIntersectionObserver() {
       const sentinel = document.getElementById('scrollSentinel');
       observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setTimeout(() => { appendBatchToGrid(6); }, 250);
+          if (entry.isIntersecting && db.length > 0) {
+            setTimeout(() => { appendBatchToGrid(BATCH_SIZE); }, 200);
           }
         });
-      }, { rootMargin: '250px' });
+      }, { rootMargin: '300px' });
       observer.observe(sentinel);
     }
 
     window.addEventListener('popstate', () => {
       const targetId = extractTargetId();
-      loadActiveModel(targetId, true);
+      if (targetId) {
+        loadActiveModel(targetId, true);
+      } else {
+        showHomeView();
+      }
     });
 
     document.getElementById('searchForm').addEventListener('submit', (e) => {
@@ -601,4 +631,3 @@
   </script>
 </body>
 </html>
-
